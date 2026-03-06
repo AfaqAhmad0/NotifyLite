@@ -1,0 +1,113 @@
+<p align="center">
+  <h1 align="center">🔔 NotifyLite</h1>
+  <p align="center"><strong>Custom Windows Notification Interceptor</strong></p>
+  <p align="center">Replace boring Windows notification banners with beautiful, customizable toast cards.</p>
+</p>
+
+---
+
+## ✨ Features
+
+- 🎨 **Custom toast cards** — dark/light themed, animated slide-in/out notifications
+- 👆 **Click to open** — click any toast to jump to the source app
+- ✕ **Quick dismiss** — close button to dismiss without opening
+- 🔊 **Notification sounds** — system default or custom `.wav` per app
+- 📋 **Action Center** — notifications persist in Windows notification tray (Win+N)
+- ⚙️ **Fully customizable** — Settings UI accessible from tray icon
+- 🖥️ **Tray-only app** — runs silently in system tray
+
+## 🎛️ Customization
+
+All settings accessible via **right-click tray icon → ⚙️ Settings**:
+
+| Category | Options |
+|----------|---------|
+| **Appearance** | Theme (Dark/Light), font family, title & body sizes |
+| **Colors** | Title text, body text, card background, accent color — all via hex picker |
+| **Card** | Width, corner radius, card opacity, text opacity |
+| **Behavior** | Auto-dismiss duration, max visible toasts, position (all 4 corners) |
+| **Sound** | Enable/disable, system default or custom `.wav`, per-app overrides (mute specific apps) |
+
+## 📦 Installation
+
+### From Release ZIP
+1. Download `NotifyLite-v1.0.zip` from [Releases](../../releases)
+2. Extract and **right-click `Install.ps1` → Run with PowerShell** (as Admin)
+3. Launch **NotifyLite** from the Start Menu
+
+### Prerequisites
+- Windows 10/11 (64-bit)
+- **Developer Mode** enabled: `Settings → Privacy & Security → For developers → ON`
+
+### Manual Install
+```powershell
+# Run PowerShell as Administrator
+certutil -addstore TrustedPeople .\NotifyLite.cer
+Add-AppxPackage .\NotifyLite.msix
+```
+
+## 🔨 Build from Source
+
+### Requirements
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [Windows SDK](https://developer.microsoft.com/windows/downloads/windows-sdk/) (for `MakeAppx.exe` and `SignTool.exe`)
+
+### Build & Install
+```powershell
+cd NotifyLite
+powershell -ExecutionPolicy Bypass -File Scripts\build-msix.ps1
+```
+
+This single command will:
+1. Publish a self-contained .NET 8 build
+2. Package it as an MSIX
+3. Sign with a self-signed certificate
+4. Trust the certificate
+5. Install the MSIX package
+
+## 🏗️ Project Structure
+
+```
+NotifyLite/
+├── NotifyLite.sln
+├── Scripts/
+│   └── build-msix.ps1              # Build → package → sign → install
+├── Dist/
+│   ├── Install.ps1                 # One-click installer for recipients
+│   ├── Uninstall.ps1               # One-click uninstaller
+│   └── README.md                   # Distribution readme
+└── NotifyLite/
+    ├── NotifyLite.csproj
+    ├── App.xaml / App.xaml.cs       # Entry point, tray-only app
+    ├── GlobalUsings.cs              # WPF/WinForms namespace resolution
+    ├── MsixPackage/
+    │   └── AppxManifest.xml         # MSIX identity & capabilities
+    ├── Assets/                      # App icons
+    ├── Services/
+    │   ├── NotificationListener.cs  # WinRT UserNotificationListener API
+    │   ├── NotificationSuppressor.cs# Registry-based native banner suppression
+    │   ├── ActionCenterManager.cs   # Windows Action Center integration
+    │   ├── TrayManager.cs           # System tray icon + context menu
+    │   └── StartupManager.cs        # Auto-start via registry
+    ├── Managers/
+    │   └── ToastManager.cs          # Toast lifecycle, positioning, sounds
+    ├── Windows/
+    │   ├── ToastWindow.xaml/.cs     # Custom animated toast card
+    │   └── SettingsWindow.xaml/.cs  # Settings UI
+    ├── Models/
+    │   └── NotificationData.cs      # Intercepted notification model
+    └── Helpers/
+        └── ConfigManager.cs         # JSON config persistence
+```
+
+## ⚙️ Tech Stack
+
+- **Framework:** .NET 8, WPF
+- **Notification API:** WinRT `UserNotificationListener`
+- **Packaging:** MSIX (self-signed)
+- **Tray Icon:** Hardcodet WPF TaskbarNotification
+- **Config:** JSON (`%APPDATA%/NotifyLite/config.json`)
+
+## 📄 License
+
+MIT License — free to use, modify, and distribute.

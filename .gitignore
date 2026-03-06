@@ -1,0 +1,32 @@
+# Build outputs
+bin/
+obj/
+publish/
+msix-staging/
+
+# MSIX build artifacts
+*.msix
+*.cer
+*.pfx
+
+# Distribution ZIP
+*.zip
+Dist/NotifyLite.msix
+Dist/NotifyLite.cer
+
+# IDE / Editor
+.vs/
+.vscode/
+*.user
+*.suo
+*.cache
+*.log
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Rider / JetBrains
+.idea/
+*.sln.iml
