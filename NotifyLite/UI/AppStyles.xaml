@@ -3,17 +3,17 @@
 
     <!-- ScrollBar Thumb -->
     <Style x:Key="ScrollThumb" TargetType="{x:Type Thumb}">
-        <Setter Property="Background" Value="#444466"/>
+        <Setter Property="Background" Value="#8B7CF6"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Border CornerRadius="1" Background="{TemplateBinding Background}" Margin="0,2"/>
+                    <Border Background="{TemplateBinding Background}" Margin="0"/>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#6C63FF"/>
+                <Setter Property="Background" Value="#A093FA"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -21,13 +21,13 @@
     <!-- ScrollBar Style -->
     <Style TargetType="{x:Type ScrollBar}">
         <Setter Property="Background" Value="Transparent"/>
-        <Setter Property="Width" Value="2"/>
-        <Setter Property="Margin" Value="0,0,1,0"/>
+        <Setter Property="Width" Value="3"/>
+        <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollBar}">
                     <Grid>
-                        <Border Background="{TemplateBinding Background}" CornerRadius="1"/>
+                        <Border Background="{TemplateBinding Background}"/>
                         <Track x:Name="PART_Track" IsDirectionReversed="true">
                             <Track.Thumb>
                                 <Thumb Style="{StaticResource ScrollThumb}"/>
@@ -48,18 +48,13 @@
                     <Grid>
                         <ScrollContentPresenter x:Name="PART_ScrollContentPresenter" CanContentScroll="{TemplateBinding CanContentScroll}"/>
                         <ScrollBar x:Name="PART_VerticalScrollBar"
-                                   Opacity="0.3"
+                                   Opacity="1.0"
                                    HorizontalAlignment="Right"
                                    Value="{TemplateBinding VerticalOffset}"
                                    Maximum="{TemplateBinding ScrollableHeight}"
                                    ViewportSize="{TemplateBinding ViewportHeight}"
                                    Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
                     </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="PART_VerticalScrollBar" Property="Opacity" Value="1.0" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

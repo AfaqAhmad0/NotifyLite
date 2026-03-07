@@ -106,12 +106,12 @@
             </Border>
 
             <!-- Scrollable Content -->
-            <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,10" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+            <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="28,4,28,10" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                 <StackPanel>
 
                     <!-- === FLOATING ICON === -->
                     <TextBlock Text="🫧  Floating Icon" Style="{StaticResource SectionHeader}" Margin="0,0,0,6"/>
-                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,16">
+                    <Border Background="#22223A" CornerRadius="12" Padding="22,16" Margin="0,0,0,12">
                         <StackPanel>
                             <DockPanel>
                                 <TextBlock Text="Show floating icon on screen" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
@@ -125,7 +125,7 @@
 
                     <!-- === APPEARANCE === -->
                     <TextBlock Text="🎨  Appearance" Style="{StaticResource SectionHeader}"/>
-                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,4">
+                    <Border Background="#22223A" CornerRadius="12" Padding="22,16" Margin="0,0,0,12">
                         <StackPanel>
                             <!-- Theme -->
                             <DockPanel>
@@ -169,7 +169,7 @@
 
                     <!-- === COLORS === -->
                     <TextBlock Text="🎯  Colors" Style="{StaticResource SectionHeader}"/>
-                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,4">
+                    <Border Background="#22223A" CornerRadius="12" Padding="22,16" Margin="0,0,0,12">
                         <StackPanel>
                             <!-- Title color -->
                             <DockPanel Margin="0,2,0,6">
@@ -219,7 +219,7 @@
 
                     <!-- === CARD === -->
                     <TextBlock Text="📐  Card" Style="{StaticResource SectionHeader}"/>
-                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,4">
+                    <Border Background="#22223A" CornerRadius="12" Padding="22,16" Margin="0,0,0,12">
                         <StackPanel>
                             <!-- Width -->
                             <DockPanel>
@@ -257,7 +257,7 @@
 
                     <!-- === BEHAVIOR === -->
                     <TextBlock Text="⏱️  Behavior" Style="{StaticResource SectionHeader}"/>
-                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,4">
+                    <Border Background="#22223A" CornerRadius="12" Padding="22,16" Margin="0,0,0,12">
                         <StackPanel>
                             <DockPanel>
                                 <TextBlock Text="Auto-dismiss" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
@@ -308,7 +308,7 @@
 
                     <!-- === SOUND === -->
                     <TextBlock Text="🔔  Sound" Style="{StaticResource SectionHeader}"/>
-                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,4">
+                    <Border Background="#22223A" CornerRadius="12" Padding="22,16" Margin="0,0,0,12">
                         <StackPanel>
                             <!-- Global sound toggle -->
                             <DockPanel>
