@@ -28,12 +28,12 @@ Add-AppxPackage .\NotifyLite.msix
 
 ## Features
 
-- 🔔 **Custom notification toasts** — dark/light themed, animated cards
-- 👆 **Click to open** — click a toast to open the source app
-- ✕ **Dismiss button** — close without opening the app
-- 🔊 **Notification sounds** — system default or custom .wav per app
-- 📋 **Action Center** — notifications persist in Win+N tray
-- ⚙️ **Fully customizable** — right-click the tray icon → Settings
+- 🔔 **Custom notification toasts** - dark/light themed, animated cards
+- 👆 **Click to open** - click a toast to open the source app
+- ✕ **Dismiss button** - close without opening the app
+- 🔊 **Notification sounds** - system default or custom .wav per app
+- 📋 **Action Center** - notifications persist in Win+N tray
+- ⚙️ **Fully customizable** - right-click the tray icon → Settings
 
 ### Settings (right-click tray icon → ⚙️ Settings)
 - Theme (Dark/Light)

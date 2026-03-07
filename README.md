@@ -8,13 +8,13 @@
 
 ## ✨ Features
 
-- 🎨 **Custom toast cards** — dark/light themed, animated slide-in/out notifications
-- 👆 **Click to open** — click any toast to jump to the source app
-- ✕ **Quick dismiss** — close button to dismiss without opening
-- 🔊 **Notification sounds** — system default or custom `.wav` per app
-- 📋 **Action Center** — notifications persist in Windows notification tray (Win+N)
-- ⚙️ **Fully customizable** — Settings UI accessible from tray icon
-- 🖥️ **Tray-only app** — runs silently in system tray
+- 🎨 **Custom toast cards** - dark/light themed, animated slide-in/out notifications
+- 👆 **Click to open** - click any toast to jump to the source app
+- ✕ **Quick dismiss** - close button to dismiss without opening
+- 🔊 **Notification sounds** - system default or custom `.wav` per app
+- 📋 **Action Center** - notifications persist in Windows notification tray (Win+N)
+- ⚙️ **Fully customizable** - Settings UI accessible from tray icon
+- 🖥️ **Tray-only app** - runs silently in system tray
 
 ## 🎛️ Customization
 
@@ -23,7 +23,7 @@ All settings accessible via **right-click tray icon → ⚙️ Settings**:
 | Category | Options |
 |----------|---------|
 | **Appearance** | Theme (Dark/Light), font family, title & body sizes |
-| **Colors** | Title text, body text, card background, accent color — all via hex picker |
+| **Colors** | Title text, body text, card background, accent color - all via hex picker |
 | **Card** | Width, corner radius, card opacity, text opacity |
 | **Behavior** | Auto-dismiss duration, max visible toasts, position (all 4 corners) |
 | **Sound** | Enable/disable, system default or custom `.wav`, per-app overrides (mute specific apps) |
@@ -65,7 +65,7 @@ This single command will:
 4. Trust the certificate
 5. Install the MSIX package
 
-## 🏗️ Project Structure
+## �-️ Project Structure
 
 ```
 NotifyLite/
@@ -110,4 +110,4 @@ NotifyLite/
 
 ## 📄 License
 
-MIT License — free to use, modify, and distribute.
+MIT License - free to use, modify, and distribute.
