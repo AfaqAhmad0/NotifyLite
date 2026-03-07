@@ -81,8 +81,22 @@ public partial class App : Application
         // Suppress native toast banners first
         _suppressor.Suppress();
 
-        // Start notification listener
-        var accessGranted = await _listener.StartAsync();
+        // Retry loop: after a reboot, Windows notification subsystem may not
+        // be ready immediately. We retry a few times with delays before giving up.
+        const int maxRetries = 5;
+        const int delaySeconds = 5;
+        bool accessGranted = false;
+
+        for (int attempt = 1; attempt <= maxRetries; attempt++)
+        {
+            accessGranted = await _listener.StartAsync();
+            if (accessGranted) break;
+
+            Debug.WriteLine($"[App] Notification access attempt {attempt}/{maxRetries} failed, retrying in {delaySeconds}s...");
+
+            if (attempt < maxRetries)
+                await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
+        }
 
         if (accessGranted)
         {
@@ -92,9 +106,8 @@ public partial class App : Application
         else
         {
             _trayManager.UpdateTooltip("Permission Required");
-            Debug.WriteLine("[App] Notification access was not granted.");
+            Debug.WriteLine("[App] Notification access was not granted after retries.");
 
-            // Show a message to the user
             MessageBox.Show(
                 "NotifyLite needs permission to access your notifications.\n\n" +
                 "Please grant notification access in Windows Settings:\n" +
