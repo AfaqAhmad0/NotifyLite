@@ -1,4 +1,4 @@
-# 🔔 NotifyLite v1.0.0 - Custom Windows Notification Interceptor
+# 🔔 NotifyLite v1.0.0
 
 Replace boring default Windows notification banners with beautiful, fully customizable toast cards.
 
@@ -19,7 +19,7 @@ Replace boring default Windows notification banners with beautiful, fully custom
 | Category | What you can change |
 |----------|-------------------|
 | 🎨 Appearance | Theme (Dark/Light), font family, title & body font sizes |
-| 🎯 Colors | Title text, body text, card background, accent (timer bar) - all via hex color picker with live preview |
+| 🎯 Colors | Title text, body text, card background, accent (timer bar), all with hex color picker and live preview |
 | 📐 Card | Width, corner radius, separate card opacity & text opacity |
 | ⏱️ Behavior | Auto-dismiss duration, max visible toasts, position (all 4 corners) |
 | 🔔 Sound | Enable/disable, system default or custom `.wav`, per-app overrides (Default / Custom / Muted) |
@@ -28,27 +28,40 @@ Replace boring default Windows notification banners with beautiful, fully custom
 
 ### Requirements
 - Windows 10/11 (64-bit)
-- **Developer Mode** enabled: `Settings → Privacy & Security → For developers → ON`
+- **Developer Mode** enabled: `Settings > Privacy & Security > For developers > ON`
 
 ### Quick Install
 1. Download **`NotifyLite-v1.0.zip`** below
 2. Extract the ZIP
-3. Right-click **`Install.ps1`** → **Run with PowerShell** (as Administrator)
-4. Follow the prompts - that's it!
+3. Double-click **`Install.bat`**
+4. Approve the admin prompt and follow the instructions
 
 ### Manual Install (PowerShell as Admin)
 ```powershell
+cd Package
 certutil -addstore TrustedPeople .\NotifyLite.cer
 Add-AppxPackage .\NotifyLite.msix
 ```
 
 ### First Launch
-- Windows will ask for notification access - click **Allow**
+- Windows will ask for notification access, click **Allow**
 - The app runs in the system tray (look for the purple **N** icon)
 - Right-click the tray icon for controls and **⚙️ Settings**
 
-## �-�️ Uninstall
-Run `Uninstall.ps1` from the ZIP, or:
+### ZIP Structure
+```
+NotifyLite-v1.0/
+  Install.bat           <-- double-click this
+  README.md
+  Package/
+    NotifyLite.msix
+    NotifyLite.cer
+    Install.ps1
+    Uninstall.ps1
+```
+
+## 🗑️ Uninstall
+Run `Package\Uninstall.ps1` or:
 ```powershell
 Get-AppxPackage -Name "NotifyLite" | Remove-AppxPackage
 ```
