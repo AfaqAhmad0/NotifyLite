@@ -18,10 +18,11 @@
         </Style.Triggers>
     </Style>
 
-    <!-- ScrollBar Style -->
     <Style TargetType="{x:Type ScrollBar}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Width" Value="1"/>
+        <Setter Property="MinWidth" Value="1"/>
+        <Setter Property="MaxWidth" Value="1"/>
         <Setter Property="Margin" Value="0,0,0,0"/>
         <Setter Property="Template">
             <Setter.Value>
@@ -51,7 +52,7 @@
                                    Opacity="1.0"
                                    HorizontalAlignment="Right"
                                    Style="{DynamicResource {x:Type ScrollBar}}"
-                                   Width="1"
+                                   Width="1" MinWidth="1" MaxWidth="1"
                                    Value="{TemplateBinding VerticalOffset}"
                                    Maximum="{TemplateBinding ScrollableHeight}"
                                    ViewportSize="{TemplateBinding ViewportHeight}"
