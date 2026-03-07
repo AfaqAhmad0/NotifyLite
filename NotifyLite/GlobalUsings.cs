@@ -17,3 +17,6 @@ global using Point = System.Windows.Point;
 global using TextBox = System.Windows.Controls.TextBox;
 global using ComboBox = System.Windows.Controls.ComboBox;
 global using Button = System.Windows.Controls.Button;
+global using MouseEventArgs = System.Windows.Input.MouseEventArgs;
+global using Brushes = System.Windows.Media.Brushes;
+global using Cursors = System.Windows.Input.Cursors;

@@ -1,4 +1,5 @@
 using NotifyLite.Helpers;
+using NotifyLite.Managers;
 using NotifyLite.Models;
 using NotifyLite.Windows;
 using System.Diagnostics;
@@ -10,7 +11,8 @@ namespace NotifyLite.Managers;
 
 /// <summary>
 /// Manages the lifecycle, positioning, and sound playback for toast windows.
-/// Supports configurable positions, custom sounds, and per-app sound overrides.
+/// Supports configurable positions (presets + custom X/Y), custom sounds, 
+/// per-app sound overrides, and notification history integration.
 /// </summary>
 public class ToastManager
 {
@@ -18,12 +20,28 @@ public class ToastManager
     private readonly object _lock = new();
     private readonly ConfigManager _configManager;
 
+    private NotificationHistoryManager? _historyManager;
+    private FloatingIconWindow? _floatingIcon;
+
     private const double ToastSpacing = 4;
     private const double ScreenMargin = 8;
 
     public ToastManager(ConfigManager configManager)
     {
         _configManager = configManager;
+    }
+
+    /// <summary>Set the history manager and floating icon for animation/history features.</summary>
+    public void SetHistoryManager(NotificationHistoryManager historyManager, FloatingIconWindow? floatingIcon)
+    {
+        _historyManager = historyManager;
+        _floatingIcon = floatingIcon;
+    }
+
+    /// <summary>Update the floating icon reference (e.g. when shown/hidden).</summary>
+    public void SetFloatingIcon(FloatingIconWindow? icon)
+    {
+        _floatingIcon = icon;
     }
 
     /// <summary>Show a new toast notification. Must be called on the UI thread.</summary>
@@ -59,7 +77,7 @@ public class ToastManager
 
         try
         {
-            PositionToast(toast, config.Position);
+            PositionToast(toast, config);
             toast.Show();
 
             // Play notification sound
@@ -116,7 +134,7 @@ public class ToastManager
     }
 
     /// <summary>Position a toast based on the configured screen position.</summary>
-    private void PositionToast(ToastWindow toast, string position)
+    private void PositionToast(ToastWindow toast, AppConfig config)
     {
         var workArea = SystemParameters.WorkArea;
         double offset = ScreenMargin;
@@ -131,7 +149,19 @@ public class ToastManager
         }
 
         double estimatedHeight = 90;
+        string position = config.Position;
 
+        // Custom position mode
+        if (position == "Custom" && config.PositionX >= 0 && config.PositionY >= 0)
+        {
+            toast.Left = config.PositionX;
+            // Stack upward from the anchor point
+            toast.Top = config.PositionY - offset - estimatedHeight + ScreenMargin;
+            toast.ContentRendered += (_, _) => RepositionAllToasts();
+            return;
+        }
+
+        // Preset positions
         switch (position)
         {
             case "TopRight":
@@ -159,7 +189,8 @@ public class ToastManager
     private void RepositionAllToasts()
     {
         var workArea = SystemParameters.WorkArea;
-        var position = _configManager.Config.Position;
+        var config = _configManager.Config;
+        string position = config.Position;
         double offset = ScreenMargin;
 
         lock (_lock)
@@ -168,24 +199,32 @@ public class ToastManager
             {
                 if (!toast.IsLoaded) continue;
 
-                switch (position)
+                if (position == "Custom" && config.PositionX >= 0 && config.PositionY >= 0)
                 {
-                    case "TopRight":
-                        toast.Left = workArea.Right - toast.Width - ScreenMargin;
-                        toast.Top = workArea.Top + offset;
-                        break;
-                    case "TopLeft":
-                        toast.Left = workArea.Left + ScreenMargin;
-                        toast.Top = workArea.Top + offset;
-                        break;
-                    case "BottomLeft":
-                        toast.Left = workArea.Left + ScreenMargin;
-                        toast.Top = workArea.Bottom - offset - toast.ActualHeight;
-                        break;
-                    default: // BottomRight
-                        toast.Left = workArea.Right - toast.Width - ScreenMargin;
-                        toast.Top = workArea.Bottom - offset - toast.ActualHeight;
-                        break;
+                    toast.Left = config.PositionX;
+                    toast.Top = config.PositionY - offset - toast.ActualHeight + ScreenMargin;
+                }
+                else
+                {
+                    switch (position)
+                    {
+                        case "TopRight":
+                            toast.Left = workArea.Right - toast.Width - ScreenMargin;
+                            toast.Top = workArea.Top + offset;
+                            break;
+                        case "TopLeft":
+                            toast.Left = workArea.Left + ScreenMargin;
+                            toast.Top = workArea.Top + offset;
+                            break;
+                        case "BottomLeft":
+                            toast.Left = workArea.Left + ScreenMargin;
+                            toast.Top = workArea.Bottom - offset - toast.ActualHeight;
+                            break;
+                        default: // BottomRight
+                            toast.Left = workArea.Right - toast.Width - ScreenMargin;
+                            toast.Top = workArea.Bottom - offset - toast.ActualHeight;
+                            break;
+                    }
                 }
 
                 offset += toast.ActualHeight + ToastSpacing;
@@ -198,6 +237,14 @@ public class ToastManager
         if (sender is ToastWindow toast)
         {
             toast.ToastDismissed -= OnToastDismissed;
+
+            // Add to notification history
+            if (toast.NotificationData != null && _historyManager != null)
+            {
+                _historyManager.Add(toast.NotificationData);
+                _floatingIcon?.AnimateNotificationIn();
+            }
+
             lock (_lock) { _activeToasts.Remove(toast); }
             Application.Current?.Dispatcher.BeginInvoke(RepositionAllToasts);
         }

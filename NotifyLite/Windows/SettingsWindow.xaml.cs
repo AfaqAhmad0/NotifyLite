@@ -55,6 +55,12 @@ public partial class SettingsWindow : Window
         DurationSlider.Value = c.DismissSeconds;
         MaxToastsSlider.Value = c.MaxVisibleToasts;
         SelectComboByTag(PositionCombo, c.Position);
+        PosXBox.Text = c.PositionX >= 0 ? c.PositionX.ToString() : "";
+        PosYBox.Text = c.PositionY >= 0 ? c.PositionY.ToString() : "";
+        CustomPositionPanel.Visibility = c.Position == "Custom" ? Visibility.Visible : Visibility.Collapsed;
+
+        // Floating Icon
+        FloatingIconCheck.IsChecked = c.ShowFloatingIcon;
 
         // Sound
         SoundEnabledCheck.IsChecked = c.SoundEnabled;
@@ -214,6 +220,14 @@ public partial class SettingsWindow : Window
         c.DismissSeconds = DurationSlider.Value;
         c.MaxVisibleToasts = (int)MaxToastsSlider.Value;
         c.Position = (PositionCombo.SelectedItem as WpfComboBoxItem)?.Tag?.ToString() ?? "BottomRight";
+        if (c.Position == "Custom")
+        {
+            if (double.TryParse(PosXBox.Text, out var px)) c.PositionX = px; 
+            if (double.TryParse(PosYBox.Text, out var py)) c.PositionY = py;
+        }
+
+        // Floating Icon
+        c.ShowFloatingIcon = FloatingIconCheck.IsChecked == true;
 
         // Sound
         c.SoundEnabled = SoundEnabledCheck.IsChecked == true;
@@ -277,7 +291,8 @@ public partial class SettingsWindow : Window
             c.ToastWidth = 300; c.CornerRadius = 8;
             c.CardOpacity = 1.0; c.TextOpacity = 1.0;
             c.DismissSeconds = 4; c.MaxVisibleToasts = 5;
-            c.Position = "BottomRight";
+            c.Position = "BottomRight"; c.PositionX = -1; c.PositionY = -1;
+            c.ShowFloatingIcon = true;
             c.SoundEnabled = true; c.SoundFile = "default";
             c.AppSounds.Clear();
 
@@ -321,6 +336,13 @@ public partial class SettingsWindow : Window
 
     private void MaxToastsSlider_Changed(object s, RoutedPropertyChangedEventArgs<double> e)
     { if (MaxToastsLabel != null) MaxToastsLabel.Text = $"{(int)e.NewValue}"; }
+
+    private void PositionCombo_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_isLoading || CustomPositionPanel == null) return;
+        var tag = (PositionCombo.SelectedItem as WpfComboBoxItem)?.Tag?.ToString();
+        CustomPositionPanel.Visibility = tag == "Custom" ? Visibility.Visible : Visibility.Collapsed;
+    }
 
     // --- Color preview handlers ---
     private void TitleColor_Changed(object s, TextChangedEventArgs e)

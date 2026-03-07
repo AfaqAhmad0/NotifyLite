@@ -1,6 +1,7 @@
 ﻿using NotifyLite.Helpers;
 using NotifyLite.Managers;
 using NotifyLite.Services;
+using NotifyLite.Windows;
 using System.Diagnostics;
 using System.Windows;
 
@@ -8,7 +9,7 @@ namespace NotifyLite;
 
 /// <summary>
 /// Application entry point. Runs as a tray-only app with no main window.
-/// Orchestrates: notification listening → custom toast rendering → tray management.
+/// Orchestrates: notification listening -> custom toast rendering -> tray management.
 /// </summary>
 public partial class App : Application
 {
@@ -17,6 +18,8 @@ public partial class App : Application
     private NotificationListener _listener = null!;
     private ToastManager _toastManager = null!;
     private TrayManager _trayManager = null!;
+    private NotificationHistoryManager _historyManager = null!;
+    private FloatingIconWindow? _floatingIcon;
 
     protected override async void OnStartup(StartupEventArgs e)
     {
@@ -38,17 +41,28 @@ public partial class App : Application
             Debug.WriteLine($"[App] Unobserved task exception: {args.Exception.Message}");
             args.SetObserved(); // Prevent crash
         };
+
         // 1. Load configuration
         _configManager = new ConfigManager();
         _configManager.Load();
+        _configManager.ConfigChanged += OnConfigChanged;
 
-        // 2. Package identity is registered externally via Scripts\register-package.ps1
-        //    If not registered, the notification listener will show a permission dialog.
-
-        // 3. Initialize toast manager (handles custom UI rendering)
+        // 2. Initialize toast manager (handles custom UI rendering)
         _toastManager = new ToastManager(_configManager);
 
-        // 3b. Initialize Action Center integration
+        // 2b. Initialize notification history
+        _historyManager = new NotificationHistoryManager();
+
+        // 2c. Initialize floating icon if enabled
+        if (_configManager.Config.ShowFloatingIcon)
+        {
+            ShowFloatingIcon();
+        }
+
+        // 2d. Wire history manager to toast manager
+        _toastManager.SetHistoryManager(_historyManager, _floatingIcon);
+
+        // 3. Initialize Action Center integration
         ActionCenterManager.Initialize();
 
         // 4. Initialize notification suppressor and suppress IMMEDIATELY
@@ -77,6 +91,45 @@ public partial class App : Application
         }
     }
 
+    /// <summary>Handle config changes (e.g. floating icon toggle).</summary>
+    private void OnConfigChanged(object? sender, EventArgs e)
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            var config = _configManager.Config;
+
+            if (config.ShowFloatingIcon)
+            {
+                if (_floatingIcon == null || !_floatingIcon.IsVisible)
+                {
+                    ShowFloatingIcon();
+                    _toastManager.SetFloatingIcon(_floatingIcon);
+                }
+            }
+            else
+            {
+                HideFloatingIcon();
+                _toastManager.SetFloatingIcon(null);
+            }
+        });
+    }
+
+    private void ShowFloatingIcon()
+    {
+        if (_floatingIcon != null) return;
+        _floatingIcon = new FloatingIconWindow(_configManager, _historyManager);
+        _floatingIcon.Show();
+    }
+
+    private void HideFloatingIcon()
+    {
+        if (_floatingIcon != null)
+        {
+            _floatingIcon.Close();
+            _floatingIcon = null;
+        }
+    }
+
     /// <summary>Start listening for notifications and suppress native banners.</summary>
     private async Task StartInterception()
     {
@@ -102,7 +155,7 @@ public partial class App : Application
 
         if (accessGranted)
         {
-            _trayManager.UpdateTooltip("Active — Listening");
+            _trayManager.UpdateTooltip("Active - Listening");
             Debug.WriteLine("[App] Notification interception started.");
         }
         else
@@ -113,8 +166,8 @@ public partial class App : Application
             MessageBox.Show(
                 "NotifyLite needs permission to access your notifications.\n\n" +
                 "Please grant notification access in Windows Settings:\n" +
-                "Settings → Privacy → Notifications",
-                "NotifyLite — Permission Required",
+                "Settings > Privacy > Notifications",
+                "NotifyLite - Permission Required",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }
@@ -170,7 +223,8 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        // Clean up: restore native banners
+        // Clean up: restore native banners, close floating icon
+        HideFloatingIcon();
         _suppressor?.Dispose();
         _listener?.Dispose();
         _trayManager?.Dispose();

@@ -56,7 +56,7 @@
                     <TextBlock Text="⚙️  NotifyLite Settings"
                                Foreground="#E0E0F0" FontSize="16" FontWeight="SemiBold"
                                VerticalAlignment="Center" DockPanel.Dock="Left"/>
-                    <TextBlock Text="v1.1" Foreground="#666688" FontSize="11"
+                    <TextBlock Text="v2.0" Foreground="#666688" FontSize="11"
                                VerticalAlignment="Center" HorizontalAlignment="Right"/>
                 </DockPanel>
             </Border>
@@ -217,13 +217,46 @@
 
                             <DockPanel>
                                 <TextBlock Text="Position" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
-                                <ComboBox x:Name="PositionCombo" DockPanel.Dock="Right" Width="120" HorizontalAlignment="Right" Height="28">
+                                <ComboBox x:Name="PositionCombo" DockPanel.Dock="Right" Width="120" HorizontalAlignment="Right" Height="28"
+                                          SelectionChanged="PositionCombo_Changed">
                                     <ComboBoxItem Content="Bottom Right" Tag="BottomRight"/>
                                     <ComboBoxItem Content="Bottom Left" Tag="BottomLeft"/>
                                     <ComboBoxItem Content="Top Right" Tag="TopRight"/>
                                     <ComboBoxItem Content="Top Left" Tag="TopLeft"/>
+                                    <ComboBoxItem Content="Custom" Tag="Custom"/>
                                 </ComboBox>
                             </DockPanel>
+
+                            <!-- Custom position X/Y (only visible when Custom selected) -->
+                            <StackPanel x:Name="CustomPositionPanel" Visibility="Collapsed" Margin="0,4,0,0">
+                                <DockPanel Margin="0,2,0,4">
+                                    <TextBlock Text="X position" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
+                                    <TextBox x:Name="PosXBox" Width="70" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                                             Background="#2A2A3E" Foreground="#E0E0F0" BorderBrush="#3A3A4E"
+                                             Padding="4,2" FontSize="11"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,2,0,4">
+                                    <TextBlock Text="Y position" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
+                                    <TextBox x:Name="PosYBox" Width="70" HorizontalAlignment="Right" DockPanel.Dock="Right"
+                                             Background="#2A2A3E" Foreground="#E0E0F0" BorderBrush="#3A3A4E"
+                                             Padding="4,2" FontSize="11"/>
+                                </DockPanel>
+                                <TextBlock Text="Tip: set where toasts appear on screen" FontSize="9" Foreground="#555" Margin="0,0,0,4"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- === FLOATING ICON === -->
+                    <TextBlock Text="🫧  Floating Icon" Style="{StaticResource SectionHeader}"/>
+                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,4">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock Text="Show floating icon on screen" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
+                                <CheckBox x:Name="FloatingIconCheck" VerticalAlignment="Center"
+                                          HorizontalAlignment="Right" DockPanel.Dock="Right"/>
+                            </DockPanel>
+                            <TextBlock Text="Draggable icon shows notification count. Click to view history."
+                                       FontSize="9" Foreground="#555" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Border>
 

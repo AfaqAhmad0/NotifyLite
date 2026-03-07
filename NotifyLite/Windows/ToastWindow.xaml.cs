@@ -21,6 +21,7 @@ public partial class ToastWindow : Window
     private bool _isClosing;
 
     public event EventHandler? ToastDismissed;
+    public InterceptedNotification? NotificationData { get; private set; }
 
     public ToastWindow(InterceptedNotification data, Helpers.AppConfig config)
     {
@@ -28,6 +29,7 @@ public partial class ToastWindow : Window
 
         _dismissSeconds = config.DismissSeconds;
         _appUserModelId = data.AppUserModelId;
+        NotificationData = data;
 
         // Content
         AppNameText.Text = data.AppName;

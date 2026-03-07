@@ -92,7 +92,17 @@ public class AppConfig
     // --- Behavior ---
     public double DismissSeconds { get; set; } = 4;
     public int MaxVisibleToasts { get; set; } = 5;
+    /// <summary>"BottomRight", "BottomLeft", "TopRight", "TopLeft", or "Custom"</summary>
     public string Position { get; set; } = "BottomRight";
+    /// <summary>Custom X/Y for toast position. -1 = use preset position.</summary>
+    public double PositionX { get; set; } = -1;
+    public double PositionY { get; set; } = -1;
+
+    // --- Floating Icon ---
+    public bool ShowFloatingIcon { get; set; } = true;
+    /// <summary>Floating icon X/Y screen position. -1 = auto (center-right).</summary>
+    public double FloatingIconX { get; set; } = -1;
+    public double FloatingIconY { get; set; } = -1;
 
     // --- Sound ---
     public bool SoundEnabled { get; set; } = true;
