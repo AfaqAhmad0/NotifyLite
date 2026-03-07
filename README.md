@@ -37,7 +37,9 @@ All settings accessible via **right-click tray icon → ⚙️ Settings**:
 
 ### Prerequisites
 - Windows 10/11 (64-bit)
-- **Developer Mode** enabled: `Settings → Privacy & Security → For developers → ON`
+- **Developer Mode** enabled:
+  - Windows 11: `Settings > System > For developers > ON`
+  - Windows 10: `Settings > Privacy & Security > For developers > ON`
 
 ### Manual Install
 ```powershell

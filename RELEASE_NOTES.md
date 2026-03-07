@@ -28,7 +28,9 @@ Replace boring default Windows notification banners with beautiful, fully custom
 
 ### Requirements
 - Windows 10/11 (64-bit)
-- **Developer Mode** enabled: `Settings > Privacy & Security > For developers > ON`
+- **Developer Mode** enabled:
+  - Windows 11: `Settings > System > For developers > ON`
+  - Windows 10: `Settings > Privacy & Security > For developers > ON`
 
 ### Quick Install
 1. Download **`NotifyLite-v1.0.zip`** below

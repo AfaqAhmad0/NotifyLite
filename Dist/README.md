@@ -11,7 +11,8 @@ NotifyLite replaces Windows default notification banners with beautiful, customi
 ### Requirements
 - Windows 10/11 (64-bit)
 - **Developer Mode** must be enabled:
-  `Settings → Privacy & Security → For developers → Developer Mode: ON`
+  - Windows 11: `Settings > System > For developers > ON`
+  - Windows 10: `Settings > Privacy & Security > For developers > ON`
 
 ### Quick Install
 1. Right-click `Install.ps1` → **Run with PowerShell** (as Administrator)

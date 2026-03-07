@@ -41,7 +41,8 @@ $devMode = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersi
 if (-not $devMode -or $devMode.AllowDevelopmentWithoutDevLicense -ne 1) {
     Write-Host ""
     Write-Host "  Developer Mode needs to be enabled!" -ForegroundColor Red
-    Write-Host "  Go to: Settings > Privacy & Security > For developers" -ForegroundColor Yellow
+    Write-Host "  Windows 11: Settings > System > For developers" -ForegroundColor Yellow
+    Write-Host "  Windows 10: Settings > Privacy & Security > For developers" -ForegroundColor Yellow
     Write-Host "  Turn ON 'Developer Mode'" -ForegroundColor Yellow
     Write-Host ""
     $proceed = Read-Host "  Have you enabled Developer Mode? (y/n)"
