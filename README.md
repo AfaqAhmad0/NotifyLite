@@ -9,11 +9,12 @@
 ## ✨ Features
 
 - 🎨 **Custom toast cards** - dark/light themed, animated slide-in/out notifications
+- 🫧 **Floating Icon & History Widget** - Optional draggable badge showing unread notifications, clicking it reveals a scrollable history to review or dismiss past toasts!
 - 👆 **Click to open** - click any toast to jump to the source app
-- ✕ **Quick dismiss** - close button to dismiss without opening
+- ✕ **Quick dismiss** - close button to dismiss without opening; notifications gracefully shrink into the floating widget
 - 🔊 **Notification sounds** - system default or custom `.wav` per app
 - 📋 **Action Center** - notifications persist in Windows notification tray (Win+N)
-- ⚙️ **Fully customizable** - Settings UI accessible from tray icon
+- ⚙️ **Fully customizable** - Settings UI accessible from tray icon, featuring a modern custom transparent UI
 - 🖥️ **Tray-only app** - runs silently in system tray
 
 ## 🎛️ Customization
@@ -22,20 +23,21 @@ All settings accessible via **right-click tray icon → ⚙️ Settings**:
 
 | Category | Options |
 |----------|---------|
+| **Floating Icon** | Toggle the draggable floating badge (shows unread count & history) |
 | **Appearance** | Theme (Dark/Light), font family, title & body sizes |
 | **Colors** | Title text, body text, card background, accent color - all via hex picker |
 | **Card** | Width, corner radius, card opacity, text opacity |
-| **Behavior** | Auto-dismiss duration, max visible toasts, position (all 4 corners) |
+| **Behavior** | Auto-dismiss duration, max visible toasts, position (**all 4 corners + custom X/Y coordinates**) |
 | **Sound** | Enable/disable, system default or custom `.wav`, per-app overrides (mute specific apps) |
 
 ## 📦 Installation
 
 ### From Release ZIP
-1. Download `NotifyLite-v1.0.zip` from [Releases](../../releases)
+1. Download `NotifyLite-v2.0.0.zip` from [Releases](../../releases)
 2. Extract the ZIP
 3. Double-click **`Install.bat`**
-4. Windows may show an "Unknown Publisher" warning - click **Run** to continue
-5. Approve the admin prompt and follow the instructions
+4. Windows may show an **"Unknown Publisher" warning** (The publisher could not be verified. Are you sure you want to run this software?) - click **Run** to continue
+5. Approve the admin prompt. The script handles certificate installation automatically without requiring Developer Mode.
 
 ### Requirements
 - Windows 10/11 (64-bit)

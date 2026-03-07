@@ -1,4 +1,4 @@
-# 🔔 NotifyLite v1.0.0
+# 🔔 NotifyLite v2.0.0
 
 Replace boring default Windows notification banners with beautiful, fully customizable toast cards.
 
@@ -6,9 +6,12 @@ Replace boring default Windows notification banners with beautiful, fully custom
 
 ## ✨ Features
 
+- 🫧 **Floating Action Icon** - A draggable icon widget that tracks your unread notification history. Click it to view, scroll, or dismiss past alerts!
+- 📍 **Custom Screen Positioning** - You can now specify exact X/Y pixel coordinates for your toasts instead of being forced into the 4 corners.
+- 💅 **Major UI Overhaul** - Rebuilt settings window with razor-thin scrollbars, rounded styling, and a beautiful custom titlebar.
 - 🎨 **Custom animated toast cards** - sleek dark/light themed notifications with smooth slide-in/out animations
 - 👆 **Click-to-open** - click any toast to jump directly to the source application
-- ✕ **Quick dismiss** - close button to dismiss without opening the app
+- ✕ **Quick dismiss** - close button to dismiss without opening the app, smartly collapes into your floating icon!
 - 🔊 **Notification sounds** - system default or custom `.wav` file, with per-app overrides
 - 📋 **Action Center integration** - notifications persist in the Windows notification tray (Win+N)
 - ⚙️ **Fully customizable Settings UI** - everything adjustable from the system tray
@@ -18,10 +21,11 @@ Replace boring default Windows notification banners with beautiful, fully custom
 
 | Category | What you can change |
 |----------|-------------------|
+| 🫧 Floating | Toggle the new floating status icon / notification history widget! |
 | 🎨 Appearance | Theme (Dark/Light), font family, title & body font sizes |
 | 🎯 Colors | Title text, body text, card background, accent (timer bar), all with hex color picker and live preview |
 | 📐 Card | Width, corner radius, separate card opacity & text opacity |
-| ⏱️ Behavior | Auto-dismiss duration, max visible toasts, position (all 4 corners) |
+| ⏱️ Behavior | Auto-dismiss duration, max visible toasts, position (**all 4 corners + custom coordinates**) |
 | 🔔 Sound | Enable/disable, system default or custom `.wav`, per-app overrides (Default / Custom / Muted) |
 
 ## 📦 Installation
@@ -30,11 +34,11 @@ Replace boring default Windows notification banners with beautiful, fully custom
 - Windows 10/11 (64-bit)
 
 ### Quick Install
-1. Download **`NotifyLite-v1.0.zip`** below
+1. Download **`NotifyLite-v2.0.0.zip`** below
 2. Extract the ZIP
 3. Double-click **`Install.bat`**
-4. Windows may show an "Unknown Publisher" warning - click **Run** to continue
-5. Approve the admin prompt and follow the instructions
+4. Windows will likely show an "Unknown Publisher" prompt (*The publisher could not be verified. Are you sure you want to run this software?*). Click **Run**.
+5. Approve the admin prompt. The script gracefully handles the certificate installation. Developer Mode is NOT required!
 
 ### Manual Install (PowerShell as Admin)
 ```powershell

@@ -13,8 +13,8 @@ NotifyLite replaces Windows default notification banners with beautiful, customi
 
 ### Quick Install
 1. Double-click **`Install.bat`**
-2. Windows may show an "Unknown Publisher" warning - click **Run**
-3. Approve the admin prompt and follow the instructions
+2. Windows may show an "Unknown Publisher" warning (The publisher could not be verified. Are you sure you want to run this software?) - click **Run**
+3. Approve the admin prompt. The script will handle certificate installation automatically without requiring Developer Mode.
 4. Launch **NotifyLite** from the Start Menu
 
 ### Manual Install (PowerShell as Admin)
@@ -28,18 +28,20 @@ Add-AppxPackage .\NotifyLite.msix
 ## Features
 
 - 🔔 **Custom notification toasts** - dark/light themed, animated cards
+- 🫧 **Floating Icon & History Widget** - draggable icon showing unread count, click for a scrollable notification history
 - 👆 **Click to open** - click a toast to open the source app
-- ✕ **Dismiss button** - close without opening the app
+- ✕ **Dismiss button** - close without opening the app, animates straight into the floating widget
 - 🔊 **Notification sounds** - system default or custom .wav per app
 - 📋 **Action Center** - notifications persist in Win+N tray
 - ⚙️ **Fully customizable** - right-click the tray icon → Settings
 
 ### Settings (right-click tray icon → ⚙️ Settings)
+- Floating icon toggle
 - Theme (Dark/Light)
 - Font family & sizes
 - Card width, corner radius, opacity
 - Text & background colors
-- Toast position (all 4 corners)
+- Toast position (all 4 corners, or completely custom X/Y screen coordinates)
 - Auto-dismiss duration
 - Per-app sound configuration
 - Auto-start with Windows
