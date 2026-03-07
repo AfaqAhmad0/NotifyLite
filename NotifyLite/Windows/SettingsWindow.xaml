@@ -9,6 +9,10 @@
         WindowStyle="None"
         Background="Transparent">
 
+    <WindowChrome.WindowChrome>
+        <WindowChrome GlassFrameThickness="0" CornerRadius="0" CaptionHeight="0" ResizeBorderThickness="0"/>
+    </WindowChrome.WindowChrome>
+
     <Window.Resources>
         <Style TargetType="Slider">
             <Setter Property="Foreground" Value="#6C63FF"/>
@@ -102,7 +106,7 @@
             </Border>
 
             <!-- Scrollable Content -->
-            <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,0,20,10" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+            <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="32,0,32,10" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                 <StackPanel>
 
                     <!-- === FLOATING ICON === -->
