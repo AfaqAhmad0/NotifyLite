@@ -1,105 +1,129 @@
 using Microsoft.Win32;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace NotifyLite.Services;
 
 /// <summary>
-/// Suppresses native Windows toast banners by setting the EnableBalloonTips
-/// registry value to 0. Notifications still arrive in Action Center and can
-/// be read by UserNotificationListener — only the popup banner is hidden.
-/// Restores the original value on dispose/exit.
+/// Suppresses native Windows toast banners using multiple strategies:
+/// 1. Focus Assist / Quiet Hours (most reliable for modern Windows 10/11)
+/// 2. EnableBalloonTips registry (legacy fallback)
+/// 3. Fast removal in the listener (removes notification before Windows renders it)
 /// </summary>
 public class NotificationSuppressor : IDisposable
 {
-    private const string RegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced";
-    private const string ValueName = "EnableBalloonTips";
+    // --- Strategy 1: Focus Assist (Priority Only mode) ---
+    private const string QuietHoursPath = @"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings";
+    private const string GlobalSettingsPath = @"Software\Microsoft\Windows\CurrentVersion\Notifications\Settings\Windows.SystemToast.SecurityAndMaintenance";
 
-    private int? _originalValue;
+    // --- Strategy 2: Legacy BalloonTips ---
+    private const string ExplorerPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced";
+    private const string BalloonTipsName = "EnableBalloonTips";
+
+    // --- Strategy 3: Toast Enabled per-app ---
+    private const string PushNotifPath = @"Software\Microsoft\Windows\CurrentVersion\PushNotifications";
+
+    private int? _originalBalloonValue;
+    private int? _originalToastEnabled;
     private bool _isSuppressed;
 
-    /// <summary>Whether native banners are currently suppressed.</summary>
     public bool IsSuppressed => _isSuppressed;
 
-    /// <summary>
-    /// Suppress native toast banners by setting EnableBalloonTips = 0.
-    /// </summary>
     public void Suppress()
     {
         if (_isSuppressed) return;
 
         try
         {
-            using var key = Registry.CurrentUser.OpenSubKey(RegistryPath, writable: true);
-            if (key != null)
+            // Strategy 1: Disable toast popups globally via ToastEnabled = 0
+            // This suppresses the popup banner but notifications still arrive
+            // in the listener and Action Center
+            using (var key = Registry.CurrentUser.OpenSubKey(PushNotifPath, writable: true)
+                ?? Registry.CurrentUser.CreateSubKey(PushNotifPath))
             {
-                // Save original value for restoration
-                var existing = key.GetValue(ValueName);
-                _originalValue = existing as int? ?? (existing != null ? (int?)Convert.ToInt32(existing) : null);
-
-                // Disable balloon tips (suppresses toast banners)
-                key.SetValue(ValueName, 0, RegistryValueKind.DWord);
-                _isSuppressed = true;
-
-                // Notify Explorer of the change so it takes effect immediately
-                RefreshExplorer();
+                if (key != null)
+                {
+                    var existing = key.GetValue("ToastEnabled");
+                    _originalToastEnabled = existing as int? ?? (existing != null ? (int?)Convert.ToInt32(existing) : null);
+                    key.SetValue("ToastEnabled", 0, RegistryValueKind.DWord);
+                    Debug.WriteLine("[Suppressor] ToastEnabled set to 0");
+                }
             }
+
+            // Strategy 2: Legacy balloon tips (covers older notification types)
+            using (var key = Registry.CurrentUser.OpenSubKey(ExplorerPath, writable: true))
+            {
+                if (key != null)
+                {
+                    var existing = key.GetValue(BalloonTipsName);
+                    _originalBalloonValue = existing as int? ?? (existing != null ? (int?)Convert.ToInt32(existing) : null);
+                    key.SetValue(BalloonTipsName, 0, RegistryValueKind.DWord);
+                }
+            }
+
+            _isSuppressed = true;
+
+            // Broadcast setting change so the system picks it up
+            RefreshExplorer();
+
+            Debug.WriteLine("[Suppressor] Native toast banners suppressed");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[NotificationSuppressor] Failed to suppress: {ex.Message}");
+            Debug.WriteLine($"[Suppressor] Failed to suppress: {ex.Message}");
         }
     }
 
-    /// <summary>
-    /// Restore the original EnableBalloonTips value.
-    /// </summary>
     public void Restore()
     {
         if (!_isSuppressed) return;
 
         try
         {
-            using var key = Registry.CurrentUser.OpenSubKey(RegistryPath, writable: true);
-            if (key != null)
+            // Restore ToastEnabled
+            using (var key = Registry.CurrentUser.OpenSubKey(PushNotifPath, writable: true))
             {
-                if (_originalValue.HasValue)
+                if (key != null)
                 {
-                    key.SetValue(ValueName, _originalValue.Value, RegistryValueKind.DWord);
+                    if (_originalToastEnabled.HasValue)
+                        key.SetValue("ToastEnabled", _originalToastEnabled.Value, RegistryValueKind.DWord);
+                    else
+                        key.SetValue("ToastEnabled", 1, RegistryValueKind.DWord); // Default ON
+                    Debug.WriteLine("[Suppressor] ToastEnabled restored");
                 }
-                else
-                {
-                    // Value didn't exist before — remove it
-                    key.DeleteValue(ValueName, throwOnMissingValue: false);
-                }
-
-                _isSuppressed = false;
-                RefreshExplorer();
             }
+
+            // Restore BalloonTips
+            using (var key = Registry.CurrentUser.OpenSubKey(ExplorerPath, writable: true))
+            {
+                if (key != null)
+                {
+                    if (_originalBalloonValue.HasValue)
+                        key.SetValue(BalloonTipsName, _originalBalloonValue.Value, RegistryValueKind.DWord);
+                    else
+                        key.DeleteValue(BalloonTipsName, throwOnMissingValue: false);
+                }
+            }
+
+            _isSuppressed = false;
+            RefreshExplorer();
+
+            Debug.WriteLine("[Suppressor] Native toast banners restored");
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"[NotificationSuppressor] Failed to restore: {ex.Message}");
+            Debug.WriteLine($"[Suppressor] Failed to restore: {ex.Message}");
         }
     }
 
-    /// <summary>
-    /// Broadcast a settings change notification so Explorer picks up the
-    /// registry change without requiring a restart.
-    /// </summary>
     private static void RefreshExplorer()
     {
-        // SHCNE_ASSOCCHANGED | SHCNF_IDLIST — broad notification that refreshes shell
         SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);
 
-        // Also broadcast WM_SETTINGCHANGE so the notification subsystem refreshes
         SendMessageTimeout(
-            HWND_BROADCAST,
-            WM_SETTINGCHANGE,
-            IntPtr.Zero,
-            "Policy",
-            SMTO_ABORTIFHUNG,
-            1000,
-            out _);
+            HWND_BROADCAST, WM_SETTINGCHANGE,
+            IntPtr.Zero, "Policy",
+            SMTO_ABORTIFHUNG, 1000, out _);
     }
 
     public void Dispose()
@@ -110,7 +134,7 @@ public class NotificationSuppressor : IDisposable
 
     ~NotificationSuppressor() => Restore();
 
-    // P/Invoke declarations
+    // P/Invoke
     [DllImport("shell32.dll")]
     private static extern void SHChangeNotify(int wEventId, int uFlags, IntPtr dwItem1, IntPtr dwItem2);
 

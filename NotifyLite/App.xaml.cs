@@ -51,8 +51,10 @@ public partial class App : Application
         // 3b. Initialize Action Center integration
         ActionCenterManager.Initialize();
 
-        // 4. Initialize notification suppressor (hides native banners)
+        // 4. Initialize notification suppressor and suppress IMMEDIATELY
+        //    so native banners are blocked before any notification arrives
         _suppressor = new NotificationSuppressor();
+        _suppressor.Suppress();
 
         // 5. Initialize notification listener
         _listener = new NotificationListener();
