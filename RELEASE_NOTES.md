@@ -28,15 +28,13 @@ Replace boring default Windows notification banners with beautiful, fully custom
 
 ### Requirements
 - Windows 10/11 (64-bit)
-- **Developer Mode** enabled:
-  - Windows 11: `Settings > System > For developers > ON`
-  - Windows 10: `Settings > Privacy & Security > For developers > ON`
 
 ### Quick Install
 1. Download **`NotifyLite-v1.0.zip`** below
 2. Extract the ZIP
 3. Double-click **`Install.bat`**
-4. Approve the admin prompt and follow the instructions
+4. Windows may show an "Unknown Publisher" warning - click **Run** to continue
+5. Approve the admin prompt and follow the instructions
 
 ### Manual Install (PowerShell as Admin)
 ```powershell

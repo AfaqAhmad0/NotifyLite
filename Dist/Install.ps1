@@ -35,27 +35,8 @@ if (-not (Test-Path $msixFile)) {
     exit 1
 }
 
-# Step 1: Check Developer Mode
-Write-Host "  [1/3] Checking Developer Mode..." -ForegroundColor Yellow
-$devMode = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock" -Name "AllowDevelopmentWithoutDevLicense" -ErrorAction SilentlyContinue
-if (-not $devMode -or $devMode.AllowDevelopmentWithoutDevLicense -ne 1) {
-    Write-Host ""
-    Write-Host "  Developer Mode needs to be enabled!" -ForegroundColor Red
-    Write-Host "  Windows 11: Settings > System > For developers" -ForegroundColor Yellow
-    Write-Host "  Windows 10: Settings > Privacy & Security > For developers" -ForegroundColor Yellow
-    Write-Host "  Turn ON 'Developer Mode'" -ForegroundColor Yellow
-    Write-Host ""
-    $proceed = Read-Host "  Have you enabled Developer Mode? (y/n)"
-    if ($proceed -ne "y") {
-        Write-Host "  Please enable Developer Mode and run this script again." -ForegroundColor Yellow
-        Read-Host "Press Enter to exit"
-        exit 1
-    }
-}
-Write-Host "  [OK] Developer Mode" -ForegroundColor Green
-
-# Step 2: Trust the certificate
-Write-Host "  [2/3] Installing certificate..." -ForegroundColor Yellow
+# Step 1: Trust the certificate
+Write-Host "  [1/2] Installing certificate..." -ForegroundColor Yellow
 try {
     certutil -addstore TrustedPeople "$certFile" | Out-Null
     Write-Host "  [OK] Certificate trusted" -ForegroundColor Green
@@ -66,8 +47,8 @@ catch {
     exit 1
 }
 
-# Step 3: Install the app
-Write-Host "  [3/3] Installing NotifyLite..." -ForegroundColor Yellow
+# Step 2: Install the app
+Write-Host "  [2/2] Installing NotifyLite..." -ForegroundColor Yellow
 try {
     # Remove old version if exists
     $existing = Get-AppxPackage -Name "NotifyLite" -ErrorAction SilentlyContinue

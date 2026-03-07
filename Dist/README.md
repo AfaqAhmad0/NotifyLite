@@ -10,14 +10,12 @@ NotifyLite replaces Windows default notification banners with beautiful, customi
 
 ### Requirements
 - Windows 10/11 (64-bit)
-- **Developer Mode** must be enabled:
-  - Windows 11: `Settings > System > For developers > ON`
-  - Windows 10: `Settings > Privacy & Security > For developers > ON`
 
 ### Quick Install
-1. Right-click `Install.ps1` → **Run with PowerShell** (as Administrator)
-2. Follow the prompts
-3. Launch **NotifyLite** from the Start Menu
+1. Double-click **`Install.bat`**
+2. Windows may show an "Unknown Publisher" warning - click **Run**
+3. Approve the admin prompt and follow the instructions
+4. Launch **NotifyLite** from the Start Menu
 
 ### Manual Install (PowerShell as Admin)
 ```powershell
@@ -63,7 +61,7 @@ Get-AppxPackage -Name "NotifyLite" | Remove-AppxPackage
 Grant notification access in `Settings → Privacy → Notifications`
 
 **App doesn't start:**
-Make sure Developer Mode is enabled in Windows Settings.
+Try running `Install.bat` as Administrator manually.
 
 **No notifications appearing:**
 Check that notifications are enabled for your apps in Windows Settings.
