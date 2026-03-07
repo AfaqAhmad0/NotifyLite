@@ -5,7 +5,9 @@
         Width="540" Height="700"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
-        Background="#1A1A2E">
+        AllowsTransparency="True"
+        WindowStyle="None"
+        Background="Transparent">
 
     <Window.Resources>
         <Style TargetType="Slider">
@@ -42,8 +44,11 @@
         </Style>
     </Window.Resources>
 
-    <Border Background="#1A1A2E">
-        <Grid>
+    <Border Background="#1A1A2E" CornerRadius="10" Margin="12">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="12" ShadowDepth="3" Opacity="0.5" Color="Black"/>
+        </Border.Effect>
+        <Grid ClipToBounds="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="48"/>
                 <RowDefinition Height="*"/>
@@ -51,7 +56,7 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <Border Grid.Row="0" Padding="16,0">
+            <Border Grid.Row="0" Padding="16,0" MouseLeftButtonDown="Header_MouseLeftButtonDown" CornerRadius="10,10,0,0">
                 <Border.Background>
                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                         <GradientStop Color="#2A2A44" Offset="0.0"/>
@@ -70,7 +75,29 @@
                         </TextBlock.Effect>
                     </TextBlock>
                     <TextBlock Text="v2.0" Foreground="#8B7CF6" FontSize="11" FontWeight="Bold"
-                               VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                               VerticalAlignment="Center" HorizontalAlignment="Right" Margin="0,0,16,0"/>
+                    <Button Content="✕" Width="28" Height="28" Background="Transparent" Foreground="#8B7CF6" BorderThickness="0" 
+                            HorizontalAlignment="Right" VerticalAlignment="Center" DockPanel.Dock="Right" Cursor="Hand"
+                            Click="CloseWin_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#2A2A44"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </DockPanel>
             </Border>
 

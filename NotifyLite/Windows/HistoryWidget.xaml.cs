@@ -17,13 +17,18 @@ public partial class HistoryWidget : Window
 {
     private readonly NotificationHistoryManager _historyManager;
     private readonly ConfigManager _configManager;
+    private readonly Window _ownerIcon;
     private bool _isClosing;
 
-    public HistoryWidget(NotificationHistoryManager historyManager, ConfigManager configManager)
+    public HistoryWidget(NotificationHistoryManager historyManager, ConfigManager configManager, Window ownerIcon)
     {
         InitializeComponent();
         _historyManager = historyManager;
         _configManager = configManager;
+        _ownerIcon = ownerIcon;
+
+        _historyManager.CountChanged += (_, _) => Dispatcher.BeginInvoke(RefreshList);
+        SizeChanged += Window_SizeChanged;
 
         _historyManager.CountChanged += (_, _) => Dispatcher.BeginInvoke(RefreshList);
     }
@@ -31,6 +36,22 @@ public partial class HistoryWidget : Window
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
         RefreshList();
+    }
+
+    private void Window_SizeChanged(object sender, SizeChangedEventArgs e)
+    {
+        if (e.HeightChanged && _ownerIcon != null)
+        {
+            var workArea = SystemParameters.WorkArea;
+            var newTop = _ownerIcon.Top;
+            
+            if (newTop < workArea.Top + 10)
+                newTop = workArea.Top + 10;
+            if (newTop + ActualHeight > workArea.Bottom - 10)
+                newTop = workArea.Bottom - ActualHeight - 10;
+                
+            Top = newTop;
+        }
     }
 
     private void RefreshList()

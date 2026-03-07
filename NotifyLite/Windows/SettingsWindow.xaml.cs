@@ -25,6 +25,17 @@ public partial class SettingsWindow : Window
         _isLoading = false;
     }
 
+    private void Header_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton == System.Windows.Input.MouseButton.Left)
+            DragMove();
+    }
+
+    private void CloseWin_Click(object sender, RoutedEventArgs e)
+    {
+        Close();
+    }
+
     private void LoadSettings()
     {
         var c = _configManager.Config;

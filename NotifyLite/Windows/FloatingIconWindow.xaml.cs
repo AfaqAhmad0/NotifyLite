@@ -154,14 +154,14 @@ public partial class FloatingIconWindow : Window
             return;
         }
 
-        _historyWidget = new HistoryWidget(_historyManager, _configManager);
+        _historyWidget = new HistoryWidget(_historyManager, _configManager, this);
         _historyWidget.Closed += (_, _) => _historyWidget = null;
 
         var workArea = SystemParameters.WorkArea;
 
         // Place to the left if icon is on right half of screen, else to the right
         if (Left > workArea.Width / 2)
-            _historyWidget.Left = Left - _historyWidget.Width - 10;
+            _historyWidget.Left = Left - 320 - 10;
         else
             _historyWidget.Left = Left + Width + 10;
 
