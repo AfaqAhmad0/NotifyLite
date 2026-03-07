@@ -50,6 +50,8 @@
                         <ScrollBar x:Name="PART_VerticalScrollBar"
                                    Opacity="1.0"
                                    HorizontalAlignment="Right"
+                                   Style="{DynamicResource {x:Type ScrollBar}}"
+                                   Width="1"
                                    Value="{TemplateBinding VerticalOffset}"
                                    Maximum="{TemplateBinding ScrollableHeight}"
                                    ViewportSize="{TemplateBinding ViewportHeight}"
