@@ -74,10 +74,10 @@
             <Border Grid.Row="0" Height="1" Background="#2A2A3E"
                     VerticalAlignment="Bottom" Margin="12,0"/>
 
-            <!-- Notification list -->
             <ScrollViewer Grid.Row="1"
                           VerticalScrollBarVisibility="Auto"
-                          Margin="4,4,4,8">
+                          Margin="4,4,4,8"
+                          PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                 <StackPanel x:Name="NotificationList"/>
             </ScrollViewer>
 

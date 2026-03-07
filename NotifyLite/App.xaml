@@ -4,5 +4,10 @@
              ShutdownMode="OnExplicitShutdown">
     <!-- No StartupUri — this is a tray-only application -->
     <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="UI/AppStyles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

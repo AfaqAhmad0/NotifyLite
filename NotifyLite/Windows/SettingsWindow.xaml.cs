@@ -196,7 +196,7 @@ public partial class SettingsWindow : Window
         }
     }
 
-    private void Save_Click(object sender, RoutedEventArgs e)
+    private async void Save_Click(object sender, RoutedEventArgs e)
     {
         var c = _configManager.Config;
 
@@ -251,7 +251,15 @@ public partial class SettingsWindow : Window
         UpdateThemeColors(c);
 
         _configManager.Save();
-        Close();
+
+        // Show temporary feedback on the button
+        if (sender is Button btn)
+        {
+            var origContent = btn.Content;
+            btn.Content = "Saved ✔";
+            await System.Threading.Tasks.Task.Delay(2000);
+            btn.Content = origContent;
+        }
     }
 
     /// <summary>If the user switched themes, update colors to theme defaults unless they customized them.</summary>
@@ -397,6 +405,16 @@ public partial class SettingsWindow : Window
                 Title = "Select App Sound"
             };
             if (dialog.ShowDialog() == true) pathBox.Text = dialog.FileName;
+        }
+    }
+
+    private void UIElement_OnPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+    {
+        if (sender is ScrollViewer scv)
+        {
+            // Divide the delta to scroll fewer pixels at a time so it acts like smooth scroll
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - (e.Delta / 3.0));
+            e.Handled = true;
         }
     }
 

@@ -51,19 +51,46 @@
             </Grid.RowDefinitions>
 
             <!-- Header -->
-            <Border Grid.Row="0" Background="#16162A" Padding="16,0">
+            <Border Grid.Row="0" Padding="16,0">
+                <Border.Background>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#2A2A44" Offset="0.0"/>
+                        <GradientStop Color="#1A1A2E" Offset="1.0"/>
+                    </LinearGradientBrush>
+                </Border.Background>
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="2" Opacity="0.4" Direction="270" Color="Black"/>
+                </Border.Effect>
                 <DockPanel>
                     <TextBlock Text="⚙️  NotifyLite Settings"
                                Foreground="#E0E0F0" FontSize="16" FontWeight="SemiBold"
-                               VerticalAlignment="Center" DockPanel.Dock="Left"/>
-                    <TextBlock Text="v2.0" Foreground="#666688" FontSize="11"
+                               VerticalAlignment="Center" DockPanel.Dock="Left">
+                        <TextBlock.Effect>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.5" Color="Black"/>
+                        </TextBlock.Effect>
+                    </TextBlock>
+                    <TextBlock Text="v2.0" Foreground="#8B7CF6" FontSize="11" FontWeight="Bold"
                                VerticalAlignment="Center" HorizontalAlignment="Right"/>
                 </DockPanel>
             </Border>
 
             <!-- Scrollable Content -->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,0,20,10">
+            <ScrollViewer x:Name="SettingsScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="20,0,20,10" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                 <StackPanel>
+
+                    <!-- === FLOATING ICON === -->
+                    <TextBlock Text="🫧  Floating Icon" Style="{StaticResource SectionHeader}" Margin="0,0,0,6"/>
+                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,16">
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock Text="Show floating icon on screen" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
+                                <ToggleButton x:Name="FloatingIconCheck" Style="{StaticResource FancyToggle}" VerticalAlignment="Center"
+                                              HorizontalAlignment="Right" DockPanel.Dock="Right"/>
+                            </DockPanel>
+                            <TextBlock Text="Draggable icon shows notification count. Click to view history."
+                                       FontSize="9" Foreground="#8B7CF6" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
 
                     <!-- === APPEARANCE === -->
                     <TextBlock Text="🎨  Appearance" Style="{StaticResource SectionHeader}"/>
@@ -246,19 +273,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- === FLOATING ICON === -->
-                    <TextBlock Text="🫧  Floating Icon" Style="{StaticResource SectionHeader}"/>
-                    <Border Background="#22223A" CornerRadius="6" Padding="14,8" Margin="0,0,0,4">
-                        <StackPanel>
-                            <DockPanel>
-                                <TextBlock Text="Show floating icon on screen" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
-                                <CheckBox x:Name="FloatingIconCheck" VerticalAlignment="Center"
-                                          HorizontalAlignment="Right" DockPanel.Dock="Right"/>
-                            </DockPanel>
-                            <TextBlock Text="Draggable icon shows notification count. Click to view history."
-                                       FontSize="9" Foreground="#555" Margin="0,4,0,0"/>
-                        </StackPanel>
-                    </Border>
+
 
                     <!-- === SOUND === -->
                     <TextBlock Text="🔔  Sound" Style="{StaticResource SectionHeader}"/>
@@ -267,8 +282,8 @@
                             <!-- Global sound toggle -->
                             <DockPanel>
                                 <TextBlock Text="Notification sound" Style="{StaticResource Label}" DockPanel.Dock="Left"/>
-                                <CheckBox x:Name="SoundEnabledCheck" VerticalAlignment="Center"
-                                          HorizontalAlignment="Right" DockPanel.Dock="Right"/>
+                                <ToggleButton x:Name="SoundEnabledCheck" Style="{StaticResource FancyToggle}" VerticalAlignment="Center"
+                                              HorizontalAlignment="Right" DockPanel.Dock="Right"/>
                             </DockPanel>
 
                             <!-- Default vs Custom -->
@@ -295,7 +310,7 @@
                             <!-- Per-app sounds -->
                             <TextBlock Text="Per-app sound overrides" Style="{StaticResource Label}" Margin="0,8,0,4"/>
                             <Border Background="#1A1A2A" CornerRadius="4" Padding="8,4" MaxHeight="180">
-                                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                                     <StackPanel x:Name="AppSoundsPanel"/>
                                 </ScrollViewer>
                             </Border>

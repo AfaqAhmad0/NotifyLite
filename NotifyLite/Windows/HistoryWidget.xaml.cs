@@ -208,6 +208,15 @@ public partial class HistoryWidget : Window
         _historyManager.ClearAll();
     }
 
+    private void UIElement_OnPreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+    {
+        if (sender is ScrollViewer scv)
+        {
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - (e.Delta / 3.0));
+            e.Handled = true;
+        }
+    }
+
     private void Window_Deactivated(object sender, EventArgs e)
     {
         if (!_isClosing)
