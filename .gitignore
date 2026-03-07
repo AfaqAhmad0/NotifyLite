@@ -1,6 +1,9 @@
 # Build outputs
 bin/
 obj/
+
+# Local-only AI context doc
+CONTEXT.md
 publish/
 msix-staging/
 
