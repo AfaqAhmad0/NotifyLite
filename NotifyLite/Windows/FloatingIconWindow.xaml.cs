@@ -157,18 +157,22 @@ public partial class FloatingIconWindow : Window
         _historyWidget = new HistoryWidget(_historyManager, _configManager);
         _historyWidget.Closed += (_, _) => _historyWidget = null;
 
-        // Position near the icon
-        _historyWidget.Left = Left - 330;
-        _historyWidget.Top = Top - 200;
-
-        // Keep within screen bounds
         var workArea = SystemParameters.WorkArea;
-        if (_historyWidget.Left < workArea.Left)
-            _historyWidget.Left = Left + 50;
-        if (_historyWidget.Top < workArea.Top)
+
+        // Place to the left if icon is on right half of screen, else to the right
+        if (Left > workArea.Width / 2)
+            _historyWidget.Left = Left - _historyWidget.Width - 10;
+        else
+            _historyWidget.Left = Left + Width + 10;
+
+        // Align tops
+        _historyWidget.Top = Top;
+
+        // Keep vertically within screen bounds (widget MaxHeight is 500)
+        if (_historyWidget.Top < workArea.Top + 10)
             _historyWidget.Top = workArea.Top + 10;
-        if (_historyWidget.Top + 400 > workArea.Bottom)
-            _historyWidget.Top = workArea.Bottom - 420;
+        if (_historyWidget.Top + _historyWidget.MaxHeight > workArea.Bottom - 10)
+            _historyWidget.Top = workArea.Bottom - _historyWidget.MaxHeight - 10;
 
         _historyWidget.Show();
     }

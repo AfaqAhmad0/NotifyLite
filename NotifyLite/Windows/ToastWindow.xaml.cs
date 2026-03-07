@@ -211,11 +211,77 @@ public partial class ToastWindow : Window
         catch { }
     }
 
+    public Func<Point?>? GetTargetIconPoint { get; set; }
+
     public void DismissWithAnimation()
     {
         if (_isClosing) return;
         _isClosing = true;
-        try { ((Storyboard)FindResource("SlideOut")).Begin(this); }
+        try
+        {
+            var targetPoint = GetTargetIconPoint?.Invoke();
+            if (targetPoint.HasValue)
+            {
+                // Fly to icon animation
+                var sb = new Storyboard();
+                sb.Completed += SlideOut_Completed;
+
+                var duration = TimeSpan.FromMilliseconds(350);
+                var ease = new CubicEase { EasingMode = EasingMode.EaseIn };
+
+                var xAnim = new DoubleAnimation
+                {
+                    From = Left,
+                    To = targetPoint.Value.X - Width / 2,
+                    Duration = duration,
+                    EasingFunction = ease
+                };
+
+                var yAnim = new DoubleAnimation
+                {
+                    From = Top,
+                    To = targetPoint.Value.Y - ActualHeight / 2,
+                    Duration = duration,
+                    EasingFunction = ease
+                };
+
+                Storyboard.SetTarget(xAnim, this);
+                Storyboard.SetTargetProperty(xAnim, new PropertyPath("Left"));
+                Storyboard.SetTarget(yAnim, this);
+                Storyboard.SetTargetProperty(yAnim, new PropertyPath("Top"));
+
+                var scaleGroup = new TransformGroup();
+                scaleGroup.Children.Add(new TranslateTransform { X = 0, Y = 0 });
+                var scale = new ScaleTransform(1, 1);
+                scaleGroup.Children.Add(scale);
+                CardBorder.RenderTransformOrigin = new Point(0.5, 0.5);
+                CardBorder.RenderTransform = scaleGroup;
+
+                var scaleAnimX = new DoubleAnimation { To = 0.05, Duration = duration, EasingFunction = ease };
+                var scaleAnimY = new DoubleAnimation { To = 0.05, Duration = duration, EasingFunction = ease };
+
+                Storyboard.SetTarget(scaleAnimX, CardBorder);
+                Storyboard.SetTargetProperty(scaleAnimX, new PropertyPath("RenderTransform.Children[1].ScaleX"));
+                Storyboard.SetTarget(scaleAnimY, CardBorder);
+                Storyboard.SetTargetProperty(scaleAnimY, new PropertyPath("RenderTransform.Children[1].ScaleY"));
+
+                var opacityAnim = new DoubleAnimation { To = 0, Duration = duration, EasingFunction = ease };
+                Storyboard.SetTarget(opacityAnim, CardBorder);
+                Storyboard.SetTargetProperty(opacityAnim, new PropertyPath("Opacity"));
+
+                sb.Children.Add(xAnim);
+                sb.Children.Add(yAnim);
+                sb.Children.Add(scaleAnimX);
+                sb.Children.Add(scaleAnimY);
+                sb.Children.Add(opacityAnim);
+
+                sb.Begin();
+            }
+            else
+            {
+                ((Storyboard)FindResource("SlideOut")).Begin(this);
+            }
+        }
         catch { ToastDismissed?.Invoke(this, EventArgs.Empty); Close(); }
     }
 

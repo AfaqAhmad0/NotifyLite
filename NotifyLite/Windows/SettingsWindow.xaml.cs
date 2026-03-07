@@ -58,6 +58,8 @@ public partial class SettingsWindow : Window
         PosXBox.Text = c.PositionX >= 0 ? c.PositionX.ToString() : "";
         PosYBox.Text = c.PositionY >= 0 ? c.PositionY.ToString() : "";
         CustomPositionPanel.Visibility = c.Position == "Custom" ? Visibility.Visible : Visibility.Collapsed;
+        var workArea = SystemParameters.WorkArea;
+        PositionTipText.Text = $"Min: 0. Max X: {(int)workArea.Right}, Max Y: {(int)workArea.Bottom}";
 
         // Floating Icon
         FloatingIconCheck.IsChecked = c.ShowFloatingIcon;

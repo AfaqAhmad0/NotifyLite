@@ -68,6 +68,7 @@ public class ToastManager
 
         // Create toast with full config
         var toast = new ToastWindow(data, config);
+        toast.GetTargetIconPoint = () => _floatingIcon?.IsVisible == true ? _floatingIcon.GetScreenCenter() : null;
         toast.ToastDismissed += OnToastDismissed;
 
         lock (_lock)

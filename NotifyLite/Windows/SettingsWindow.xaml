@@ -241,7 +241,7 @@
                                              Background="#2A2A3E" Foreground="#E0E0F0" BorderBrush="#3A3A4E"
                                              Padding="4,2" FontSize="11"/>
                                 </DockPanel>
-                                <TextBlock Text="Tip: set where toasts appear on screen" FontSize="9" Foreground="#555" Margin="0,0,0,4"/>
+                                <TextBlock x:Name="PositionTipText" Text="Tip: Min 0. Max X: screen width, Max Y: screen height" FontSize="9" Foreground="#555" Margin="0,0,0,4"/>
                             </StackPanel>
                         </StackPanel>
                     </Border>
