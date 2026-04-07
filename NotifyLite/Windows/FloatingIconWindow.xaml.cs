@@ -10,9 +10,19 @@ namespace NotifyLite.Windows;
 /// <summary>
 /// Small draggable floating icon with notification badge.
 /// Click to open the history widget.
+/// Hidden from Alt+Tab and Win+Tab task switcher.
 /// </summary>
 public partial class FloatingIconWindow : Window
 {
+    /// <summary>Fired when the icon is dragged to a new position.</summary>
+    public event EventHandler? PositionChanged;
+
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        WindowHelper.HideFromTaskSwitcher(this);
+    }
+
     private readonly ConfigManager _configManager;
     private readonly NotificationHistoryManager _historyManager;
     private HistoryWidget? _historyWidget;
@@ -122,6 +132,7 @@ public partial class FloatingIconWindow : Window
             {
                 Left += diff.X;
                 Top += diff.Y;
+                PositionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
     }

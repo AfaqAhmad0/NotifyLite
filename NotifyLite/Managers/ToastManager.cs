@@ -35,13 +35,30 @@ public class ToastManager
     public void SetHistoryManager(NotificationHistoryManager historyManager, FloatingIconWindow? floatingIcon)
     {
         _historyManager = historyManager;
-        _floatingIcon = floatingIcon;
+        SetFloatingIcon(floatingIcon);
     }
 
     /// <summary>Update the floating icon reference (e.g. when shown/hidden).</summary>
     public void SetFloatingIcon(FloatingIconWindow? icon)
     {
+        // Unsubscribe from old icon
+        if (_floatingIcon != null)
+            _floatingIcon.PositionChanged -= OnFloatingIconMoved;
+
         _floatingIcon = icon;
+
+        // Subscribe to new icon's position changes for sticky mode
+        if (_floatingIcon != null)
+            _floatingIcon.PositionChanged += OnFloatingIconMoved;
+    }
+
+    /// <summary>When the floating icon is dragged in "FloatingIcon" position mode, reposition all toasts.</summary>
+    private void OnFloatingIconMoved(object? sender, EventArgs e)
+    {
+        if (_configManager.Config.Position == "FloatingIcon")
+        {
+            Application.Current?.Dispatcher.BeginInvoke(RepositionAllToasts);
+        }
     }
 
     /// <summary>Show a new toast notification. Must be called on the UI thread.</summary>
@@ -152,6 +169,14 @@ public class ToastManager
         double estimatedHeight = 90;
         string position = config.Position;
 
+        // Floating Icon sticky mode
+        if (position == "FloatingIcon" && _floatingIcon?.IsVisible == true)
+        {
+            PositionRelativeToIcon(toast, offset, estimatedHeight, workArea);
+            toast.ContentRendered += (_, _) => RepositionAllToasts();
+            return;
+        }
+
         // Custom position mode
         if (position == "Custom" && config.PositionX >= 0 && config.PositionY >= 0)
         {
@@ -200,7 +225,11 @@ public class ToastManager
             {
                 if (!toast.IsLoaded) continue;
 
-                if (position == "Custom" && config.PositionX >= 0 && config.PositionY >= 0)
+                if (position == "FloatingIcon" && _floatingIcon?.IsVisible == true)
+                {
+                    PositionRelativeToIcon(toast, offset, toast.ActualHeight, workArea);
+                }
+                else if (position == "Custom" && config.PositionX >= 0 && config.PositionY >= 0)
                 {
                     toast.Left = config.PositionX;
                     toast.Top = config.PositionY - offset - toast.ActualHeight + ScreenMargin;
@@ -230,6 +259,46 @@ public class ToastManager
 
                 offset += toast.ActualHeight + ToastSpacing;
             }
+        }
+    }
+
+    /// <summary>
+    /// Position a toast relative to the floating icon.
+    /// Toasts stack upward from the icon and appear to the left or right
+    /// depending on the icon's horizontal position on screen.
+    /// </summary>
+    private void PositionRelativeToIcon(ToastWindow toast, double offset, double toastHeight, System.Windows.Rect workArea)
+    {
+        var iconCenter = _floatingIcon!.GetScreenCenter();
+        var iconRight = _floatingIcon.Left + _floatingIcon.Width;
+        var iconLeft = _floatingIcon.Left;
+        const double gap = 8;
+
+        // Determine horizontal placement: prefer the side with more space
+        if (iconCenter.X > workArea.Width / 2)
+        {
+            // Icon is on right half → place toasts to the left
+            toast.Left = iconLeft - toast.Width - gap;
+        }
+        else
+        {
+            // Icon is on left half → place toasts to the right
+            toast.Left = iconRight + gap;
+        }
+
+        // Clamp horizontal to screen bounds
+        if (toast.Left < workArea.Left + ScreenMargin)
+            toast.Left = workArea.Left + ScreenMargin;
+        if (toast.Left + toast.Width > workArea.Right - ScreenMargin)
+            toast.Left = workArea.Right - toast.Width - ScreenMargin;
+
+        // Stack upward from the icon's vertical center
+        toast.Top = iconCenter.Y - offset - toastHeight;
+
+        // If stacking upward goes off-screen, stack downward instead
+        if (toast.Top < workArea.Top + ScreenMargin)
+        {
+            toast.Top = iconCenter.Y + offset + gap;
         }
     }
 

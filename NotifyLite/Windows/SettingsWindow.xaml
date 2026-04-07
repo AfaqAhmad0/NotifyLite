@@ -281,6 +281,7 @@
                                     <ComboBoxItem Content="Bottom Left" Tag="BottomLeft"/>
                                     <ComboBoxItem Content="Top Right" Tag="TopRight"/>
                                     <ComboBoxItem Content="Top Left" Tag="TopLeft"/>
+                                    <ComboBoxItem Content="Stick to Icon" Tag="FloatingIcon"/>
                                     <ComboBoxItem Content="Custom" Tag="Custom"/>
                                 </ComboBox>
                             </DockPanel>

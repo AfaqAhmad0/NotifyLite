@@ -12,9 +12,16 @@ namespace NotifyLite.Windows;
 /// <summary>
 /// Popup notification history widget. Shows past notifications with clear/dismiss.
 /// Closes on click-away (Deactivated event).
+/// Hidden from Alt+Tab and Win+Tab task switcher.
 /// </summary>
 public partial class HistoryWidget : Window
 {
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        WindowHelper.HideFromTaskSwitcher(this);
+    }
+
     private readonly NotificationHistoryManager _historyManager;
     private readonly ConfigManager _configManager;
     private readonly Window _ownerIcon;

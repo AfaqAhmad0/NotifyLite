@@ -1,3 +1,4 @@
+using NotifyLite.Helpers;
 using NotifyLite.Models;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -10,9 +11,16 @@ namespace NotifyLite.Windows;
 
 /// <summary>
 /// Animated toast notification card with fully configurable colors, fonts, and opacity.
+/// Hidden from Alt+Tab and Win+Tab task switcher.
 /// </summary>
 public partial class ToastWindow : Window
 {
+    protected override void OnSourceInitialized(EventArgs e)
+    {
+        base.OnSourceInitialized(e);
+        WindowHelper.HideFromTaskSwitcher(this);
+    }
+
     private readonly DispatcherTimer _dismissTimer;
     private readonly DispatcherTimer _timerBarUpdater;
     private readonly double _dismissSeconds;
