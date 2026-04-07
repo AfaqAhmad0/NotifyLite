@@ -15,7 +15,7 @@
 - 🔊 **Notification sounds** - system default or custom `.wav` per app
 - 📋 **Action Center** - notifications persist in Windows notification tray (Win+N)
 - ⚙️ **Fully customizable** - Settings UI accessible from tray icon, featuring a modern custom transparent UI
-- 🖥️ **Tray-only app** - runs silently in system tray
+- 🖥️ **Tray-only app** - runs silently in system tray, and completely hidden from Alt+Tab/Win+Tab task switcher
 
 ## 🎛️ Customization
 
@@ -27,7 +27,7 @@ All settings accessible via **right-click tray icon → ⚙️ Settings**:
 | **Appearance** | Theme (Dark/Light), font family, title & body sizes |
 | **Colors** | Title text, body text, card background, accent color - all via hex picker |
 | **Card** | Width, corner radius, card opacity, text opacity |
-| **Behavior** | Auto-dismiss duration, max visible toasts, position (**all 4 corners + custom X/Y coordinates**) |
+| **Behavior** | Auto-dismiss duration, max visible toasts, position (**all 4 corners, stick to icon, + custom X/Y coordinates**) |
 | **Sound** | Enable/disable, system default or custom `.wav`, per-app overrides (mute specific apps) |
 
 ## 📦 Installation

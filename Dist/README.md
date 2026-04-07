@@ -34,6 +34,7 @@ Add-AppxPackage .\NotifyLite.msix
 - 🔊 **Notification sounds** - system default or custom .wav per app
 - 📋 **Action Center** - notifications persist in Win+N tray
 - ⚙️ **Fully customizable** - right-click the tray icon → Settings
+- 🖥️ **Hidden from Task Switcher** - runs silently without cluttering Alt+Tab
 
 ### Settings (right-click tray icon → ⚙️ Settings)
 - Floating icon toggle
@@ -41,7 +42,7 @@ Add-AppxPackage .\NotifyLite.msix
 - Font family & sizes
 - Card width, corner radius, opacity
 - Text & background colors
-- Toast position (all 4 corners, or completely custom X/Y screen coordinates)
+- Toast position (all 4 corners, stick to floating icon, or completely custom X/Y screen coordinates)
 - Auto-dismiss duration
 - Per-app sound configuration
 - Auto-start with Windows
