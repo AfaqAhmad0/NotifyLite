@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">🔔 NotifyLite</h1>
+  <h1 align="center">🔔 NotifyLite – Custom Windows Toast Notification Manager (Open Source) </h1>
   <p align="center"><strong>Custom Windows Notification Interceptor</strong></p>
   <p align="center">Replace boring Windows notification banners with beautiful, customizable toast cards.</p>
 </p>
