@@ -30,6 +30,14 @@ All settings accessible via **right-click tray icon → ⚙️ Settings**:
 | **Behavior** | Auto-dismiss duration, max visible toasts, position (**all 4 corners, stick to icon, + custom X/Y coordinates**) |
 | **Sound** | Enable/disable, system default or custom `.wav`, per-app overrides (mute specific apps) |
 
+## Why NotifyLite?
+Replace boring native Windows notifications with:
+- Custom themed toast cards
+- Notification history widget
+- Per-app notification controls
+- Custom sounds
+- Better UX than default Windows notifications
+
 ## 📦 Installation
 
 ### From Release ZIP
