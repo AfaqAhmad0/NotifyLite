@@ -41,8 +41,8 @@ Get your custom toast notifications for Windows running in under 2 minutes:
 
 ## 📸 Screenshots
 <p align="center">
-  <img src="docs/assets/screenshot1-placeholder.png" width="48%" alt="Settings Panel">
-  <img src="docs/assets/screenshot2-placeholder.png" width="48%" alt="Custom Toasts">
+  <img src="docs/assets/settings.png" width="48%" alt="Settings Panel">
+  <img src="docs/assets/custom taost.png" width="48%" alt="Custom Toasts">
 </p>
 
 ---

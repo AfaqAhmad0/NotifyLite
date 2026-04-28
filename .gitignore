@@ -19,7 +19,6 @@ Dist/NotifyLite.cer
 
 # IDE / Editor
 .vs/
-.vscode/
 *.user
 *.suo
 *.cache
@@ -33,3 +32,5 @@ Desktop.ini
 # Rider / JetBrains
 .idea/
 *.sln.iml
+config.bat
+node_modules
