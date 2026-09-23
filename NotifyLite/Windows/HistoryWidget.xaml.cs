@@ -37,7 +37,13 @@ public partial class HistoryWidget : Window
         _historyManager.CountChanged += (_, _) => Dispatcher.BeginInvoke(RefreshList);
         SizeChanged += Window_SizeChanged;
 
-        _historyManager.CountChanged += (_, _) => Dispatcher.BeginInvoke(RefreshList);
+        Services.LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        Closed += (_, _) => Services.LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, string lang)
+    {
+        Dispatcher.BeginInvoke(RefreshList);
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -114,7 +120,7 @@ public partial class HistoryWidget : Window
 
         var appName = new TextBlock
         {
-            Text = notif.AppName ?? "Unknown",
+            Text = string.IsNullOrEmpty(notif.AppName) ? Services.LocalizationManager.Instance.GetString("History.UnknownApp") : notif.AppName,
             FontSize = 10,
             Foreground = new SolidColorBrush((Color)System.Windows.Media.ColorConverter.ConvertFromString("#6C63FF")),
             FontWeight = FontWeights.SemiBold
@@ -256,10 +262,6 @@ public partial class HistoryWidget : Window
 
     private static string FormatTime(DateTime timestamp)
     {
-        var diff = DateTime.Now - timestamp;
-        if (diff.TotalSeconds < 60) return "Just now";
-        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
-        if (diff.TotalHours < 24) return $"{(int)diff.TotalHours}h ago";
-        return timestamp.ToString("MMM d");
+        return Services.LocalizationManager.Instance.FormatRelativeTime(timestamp, isHistory: true);
     }
 }

@@ -14,6 +14,16 @@ public class TrayManager : IDisposable
 {
     private TaskbarIcon? _trayIcon;
     private readonly ConfigManager _configManager;
+    private ContextMenu? _contextMenu;
+    private string _currentStatus = "Disabled";
+
+    // Menu items for dynamic text refresh
+    private MenuItem? _enableItem;
+    private MenuItem? _themeItem;
+    private MenuItem? _soundItem;
+    private MenuItem? _startupItem;
+    private MenuItem? _settingsItem;
+    private MenuItem? _exitItem;
 
     /// <summary>Fired when the user toggles notification interception on/off.</summary>
     public event EventHandler<bool>? EnabledChanged;
@@ -32,14 +42,43 @@ public class TrayManager : IDisposable
     /// <summary>Initialize the tray icon with context menu.</summary>
     public void Initialize()
     {
-        var contextMenu = CreateContextMenu();
+        _contextMenu = CreateContextMenu();
 
         _trayIcon = new TaskbarIcon
         {
             Icon = CreateDefaultIcon(),
-            ToolTipText = "NotifyLite — Custom Notifications",
-            ContextMenu = contextMenu
+            ToolTipText = LocalizationManager.Instance.GetString("Tray.Title"),
+            ContextMenu = _contextMenu
         };
+
+        LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+    }
+
+    private void OnLanguageChanged(object? sender, string lang)
+    {
+        RefreshMenuHeaders();
+        UpdateTooltip(_currentStatus);
+    }
+
+    private void RefreshMenuHeaders()
+    {
+        if (_enableItem != null)
+            _enableItem.Header = LocalizationManager.Instance.GetString(_configManager.Config.Enabled ? "Tray.Menu.Enabled" : "Tray.Menu.Disabled");
+
+        if (_themeItem != null)
+            _themeItem.Header = LocalizationManager.Instance.GetString(_configManager.Config.Theme == "Dark" ? "Tray.Menu.DarkTheme" : "Tray.Menu.LightTheme");
+
+        if (_soundItem != null)
+            _soundItem.Header = LocalizationManager.Instance.GetString(_configManager.Config.SoundEnabled ? "Tray.Menu.SoundOn" : "Tray.Menu.SoundOff");
+
+        if (_startupItem != null)
+            _startupItem.Header = LocalizationManager.Instance.GetString(StartupManager.IsStartupEnabled() ? "Tray.Menu.AutoStartOn" : "Tray.Menu.AutoStartOff");
+
+        if (_settingsItem != null)
+            _settingsItem.Header = LocalizationManager.Instance.GetString("Tray.Menu.Settings");
+
+        if (_exitItem != null)
+            _exitItem.Header = LocalizationManager.Instance.GetString("Tray.Menu.Exit");
     }
 
     /// <summary>Build the right-click context menu.</summary>
@@ -48,72 +87,72 @@ public class TrayManager : IDisposable
         var menu = new ContextMenu();
 
         // Enable / Disable toggle
-        var enableItem = new MenuItem
+        _enableItem = new MenuItem
         {
-            Header = _configManager.Config.Enabled ? "✅ Enabled" : "⬜ Disabled",
+            Header = LocalizationManager.Instance.GetString(_configManager.Config.Enabled ? "Tray.Menu.Enabled" : "Tray.Menu.Disabled"),
             Tag = "enable"
         };
-        enableItem.Click += (s, _) =>
+        _enableItem.Click += (s, _) =>
         {
             _configManager.Config.Enabled = !_configManager.Config.Enabled;
-            ((MenuItem)s!).Header = _configManager.Config.Enabled ? "✅ Enabled" : "⬜ Disabled";
+            ((MenuItem)s!).Header = LocalizationManager.Instance.GetString(_configManager.Config.Enabled ? "Tray.Menu.Enabled" : "Tray.Menu.Disabled");
             _configManager.Save();
             EnabledChanged?.Invoke(this, _configManager.Config.Enabled);
         };
-        menu.Items.Add(enableItem);
+        menu.Items.Add(_enableItem);
 
         menu.Items.Add(new Separator());
 
         // Theme toggle
-        var themeItem = new MenuItem
+        _themeItem = new MenuItem
         {
-            Header = _configManager.Config.Theme == "Dark" ? "🌙 Dark Theme" : "☀️ Light Theme",
+            Header = LocalizationManager.Instance.GetString(_configManager.Config.Theme == "Dark" ? "Tray.Menu.DarkTheme" : "Tray.Menu.LightTheme"),
             Tag = "theme"
         };
-        themeItem.Click += (s, _) =>
+        _themeItem.Click += (s, _) =>
         {
             _configManager.Config.Theme = _configManager.Config.Theme == "Dark" ? "Light" : "Dark";
-            ((MenuItem)s!).Header = _configManager.Config.Theme == "Dark" ? "🌙 Dark Theme" : "☀️ Light Theme";
+            ((MenuItem)s!).Header = LocalizationManager.Instance.GetString(_configManager.Config.Theme == "Dark" ? "Tray.Menu.DarkTheme" : "Tray.Menu.LightTheme");
             _configManager.Save();
             ThemeChanged?.Invoke(this, _configManager.Config.Theme);
         };
-        menu.Items.Add(themeItem);
+        menu.Items.Add(_themeItem);
 
         // Sound toggle
-        var soundItem = new MenuItem
+        _soundItem = new MenuItem
         {
-            Header = _configManager.Config.SoundEnabled ? "🔔 Sound: ON" : "🔕 Sound: OFF",
+            Header = LocalizationManager.Instance.GetString(_configManager.Config.SoundEnabled ? "Tray.Menu.SoundOn" : "Tray.Menu.SoundOff"),
             Tag = "sound"
         };
-        soundItem.Click += (s, _) =>
+        _soundItem.Click += (s, _) =>
         {
             _configManager.Config.SoundEnabled = !_configManager.Config.SoundEnabled;
-            ((MenuItem)s!).Header = _configManager.Config.SoundEnabled ? "🔔 Sound: ON" : "🔕 Sound: OFF";
+            ((MenuItem)s!).Header = LocalizationManager.Instance.GetString(_configManager.Config.SoundEnabled ? "Tray.Menu.SoundOn" : "Tray.Menu.SoundOff");
             _configManager.Save();
         };
-        menu.Items.Add(soundItem);
+        menu.Items.Add(_soundItem);
 
         // Auto-start toggle
-        var startupItem = new MenuItem
+        _startupItem = new MenuItem
         {
-            Header = StartupManager.IsStartupEnabled() ? "🔄 Auto-start: ON" : "🔄 Auto-start: OFF",
+            Header = LocalizationManager.Instance.GetString(StartupManager.IsStartupEnabled() ? "Tray.Menu.AutoStartOn" : "Tray.Menu.AutoStartOff"),
             Tag = "startup"
         };
-        startupItem.Click += (s, _) =>
+        _startupItem.Click += (s, _) =>
         {
             var currentlyEnabled = StartupManager.IsStartupEnabled();
             StartupManager.SetStartup(!currentlyEnabled);
             _configManager.Config.AutoStart = !currentlyEnabled;
-            ((MenuItem)s!).Header = !currentlyEnabled ? "🔄 Auto-start: ON" : "🔄 Auto-start: OFF";
+            ((MenuItem)s!).Header = LocalizationManager.Instance.GetString(!currentlyEnabled ? "Tray.Menu.AutoStartOn" : "Tray.Menu.AutoStartOff");
             _configManager.Save();
         };
-        menu.Items.Add(startupItem);
+        menu.Items.Add(_startupItem);
 
         menu.Items.Add(new Separator());
 
         // Settings
-        var settingsItem = new MenuItem { Header = "⚙️ Settings" };
-        settingsItem.Click += (_, _) =>
+        _settingsItem = new MenuItem { Header = LocalizationManager.Instance.GetString("Tray.Menu.Settings") };
+        _settingsItem.Click += (_, _) =>
         {
             // Only open one settings window at a time
             var existing = Application.Current.Windows.OfType<NotifyLite.Windows.SettingsWindow>().FirstOrDefault();
@@ -125,14 +164,14 @@ public class TrayManager : IDisposable
             var settingsWindow = new NotifyLite.Windows.SettingsWindow(_configManager);
             settingsWindow.Show();
         };
-        menu.Items.Add(settingsItem);
+        menu.Items.Add(_settingsItem);
 
         menu.Items.Add(new Separator());
 
         // Exit
-        var exitItem = new MenuItem { Header = "❌ Exit" };
-        exitItem.Click += (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty);
-        menu.Items.Add(exitItem);
+        _exitItem = new MenuItem { Header = LocalizationManager.Instance.GetString("Tray.Menu.Exit") };
+        _exitItem.Click += (_, _) => ExitRequested?.Invoke(this, EventArgs.Empty);
+        menu.Items.Add(_exitItem);
 
         return menu;
     }
@@ -173,14 +212,23 @@ public class TrayManager : IDisposable
     /// <summary>Update the tooltip to show current status.</summary>
     public void UpdateTooltip(string status)
     {
+        _currentStatus = status;
         if (_trayIcon != null)
         {
-            _trayIcon.ToolTipText = $"NotifyLite — {status}";
+            var localizedStatus = status switch
+            {
+                "Active - Listening" or "Active" => LocalizationManager.Instance.GetString("Tray.Active"),
+                "Disabled" => LocalizationManager.Instance.GetString("Tray.Disabled"),
+                "Permission Required" or "PermissionRequired" => LocalizationManager.Instance.GetString("Tray.PermissionRequired"),
+                _ => LocalizationManager.Instance.GetString(status)
+            };
+            _trayIcon.ToolTipText = LocalizationManager.Instance.GetString("Tray.TooltipFormat", localizedStatus);
         }
     }
 
     public void Dispose()
     {
+        LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
         _trayIcon?.Dispose();
         GC.SuppressFinalize(this);
     }

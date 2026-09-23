@@ -72,6 +72,7 @@ public class AppConfig
 {
     // --- Appearance ---
     public string Theme { get; set; } = "Dark";
+    public string Language { get; set; } = "System";
     public string FontFamily { get; set; } = "Segoe UI";
     public double TitleFontSize { get; set; } = 12;
     public double BodyFontSize { get; set; } = 11;

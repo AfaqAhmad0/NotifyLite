@@ -49,10 +49,10 @@ public partial class ToastWindow : Window
 
         ApplyConfig(config);
 
-        _dismissTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(_dismissSeconds) };
-        _dismissTimer.Tick += (_, _) => { _dismissTimer.Stop(); _timerBarUpdater.Stop(); DismissWithAnimation(); };
         _timerBarUpdater = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
         _timerBarUpdater.Tick += UpdateTimerBar;
+        _dismissTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(_dismissSeconds) };
+        _dismissTimer.Tick += (_, _) => { _dismissTimer.Stop(); _timerBarUpdater.Stop(); DismissWithAnimation(); };
     }
 
     private void ApplyConfig(Helpers.AppConfig config)
@@ -139,11 +139,7 @@ public partial class ToastWindow : Window
 
     private static string FormatTimestamp(DateTime timestamp)
     {
-        var diff = DateTime.Now - timestamp;
-        if (diff.TotalSeconds < 5) return "just now";
-        if (diff.TotalSeconds < 60) return $"{(int)diff.TotalSeconds}s ago";
-        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
-        return timestamp.ToString("HH:mm");
+        return Services.LocalizationManager.Instance.FormatRelativeTime(timestamp, isHistory: false);
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)

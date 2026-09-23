@@ -1,0 +1,106 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+    <!-- Settings Window -->
+    <sys:String x:Key="Settings.Title">⚙️  NotifyLite Settings</sys:String>
+    <sys:String x:Key="Settings.Language.Header">🌐  Language</sys:String>
+    <sys:String x:Key="Settings.Language.Label">Display language</sys:String>
+    <sys:String x:Key="Settings.Language.System">Follow system</sys:String>
+    <sys:String x:Key="Settings.Language.Chinese">简体中文</sys:String>
+    <sys:String x:Key="Settings.Language.English">English</sys:String>
+
+    <sys:String x:Key="Settings.FloatingIcon.Header">🫧  Floating Icon</sys:String>
+    <sys:String x:Key="Settings.FloatingIcon.Show">Show floating icon on screen</sys:String>
+    <sys:String x:Key="Settings.FloatingIcon.Description">Draggable icon shows notification count. Click to view history.</sys:String>
+
+    <sys:String x:Key="Settings.Appearance.Header">🎨  Appearance</sys:String>
+    <sys:String x:Key="Settings.Appearance.Theme">Theme</sys:String>
+    <sys:String x:Key="Settings.Appearance.ThemeDark">Dark</sys:String>
+    <sys:String x:Key="Settings.Appearance.ThemeLight">Light</sys:String>
+    <sys:String x:Key="Settings.Appearance.Font">Font</sys:String>
+    <sys:String x:Key="Settings.Appearance.TitleSize">Title size</sys:String>
+    <sys:String x:Key="Settings.Appearance.BodySize">Body size</sys:String>
+
+    <sys:String x:Key="Settings.Colors.Header">🎯  Colors</sys:String>
+    <sys:String x:Key="Settings.Colors.TitleText">Title text</sys:String>
+    <sys:String x:Key="Settings.Colors.BodyText">Body text</sys:String>
+    <sys:String x:Key="Settings.Colors.CardBackground">Card background</sys:String>
+    <sys:String x:Key="Settings.Colors.Accent">Accent (timer bar)</sys:String>
+
+    <sys:String x:Key="Settings.Card.Header">📐  Card</sys:String>
+    <sys:String x:Key="Settings.Card.Width">Width</sys:String>
+    <sys:String x:Key="Settings.Card.CornerRadius">Corner radius</sys:String>
+    <sys:String x:Key="Settings.Card.CardOpacity">Card opacity</sys:String>
+    <sys:String x:Key="Settings.Card.TextOpacity">Text opacity</sys:String>
+
+    <sys:String x:Key="Settings.Behavior.Header">⏱️  Behavior</sys:String>
+    <sys:String x:Key="Settings.Behavior.AutoDismiss">Auto-dismiss</sys:String>
+    <sys:String x:Key="Settings.Behavior.MaxToasts">Max visible toasts</sys:String>
+    <sys:String x:Key="Settings.Behavior.Position">Position</sys:String>
+    <sys:String x:Key="Settings.Behavior.PositionBottomRight">Bottom Right</sys:String>
+    <sys:String x:Key="Settings.Behavior.PositionBottomLeft">Bottom Left</sys:String>
+    <sys:String x:Key="Settings.Behavior.PositionTopRight">Top Right</sys:String>
+    <sys:String x:Key="Settings.Behavior.PositionTopLeft">Top Left</sys:String>
+    <sys:String x:Key="Settings.Behavior.PositionStickToIcon">Stick to Icon</sys:String>
+    <sys:String x:Key="Settings.Behavior.PositionCustom">Custom</sys:String>
+    <sys:String x:Key="Settings.Behavior.PosX">X position</sys:String>
+    <sys:String x:Key="Settings.Behavior.PosY">Y position</sys:String>
+    <sys:String x:Key="Settings.Behavior.PosTip">Tip: Min 0. Max X: {0}, Max Y: {1}</sys:String>
+
+    <sys:String x:Key="Settings.Sound.Header">🔔  Sound</sys:String>
+    <sys:String x:Key="Settings.Sound.NotificationSound">Notification sound</sys:String>
+    <sys:String x:Key="Settings.Sound.DefaultSound">Default sound</sys:String>
+    <sys:String x:Key="Settings.Sound.SystemDefault">System default</sys:String>
+    <sys:String x:Key="Settings.Sound.Custom">Custom</sys:String>
+    <sys:String x:Key="Settings.Sound.Browse">Browse...</sys:String>
+    <sys:String x:Key="Settings.Sound.AppOverrides">Per-app sound overrides</sys:String>
+    <sys:String x:Key="Settings.Sound.NoApps">No apps detected yet. Apps will appear here once notifications arrive.</sys:String>
+    <sys:String x:Key="Settings.Sound.ModeDefault">Default</sys:String>
+    <sys:String x:Key="Settings.Sound.ModeCustom">Custom</sys:String>
+    <sys:String x:Key="Settings.Sound.ModeMuted">Muted</sys:String>
+    <sys:String x:Key="Settings.Sound.BrowseDialogTitle">Select Notification Sound</sys:String>
+    <sys:String x:Key="Settings.Sound.AppSoundDialogTitle">Select App Sound</sys:String>
+    <sys:String x:Key="Settings.Sound.Filter">Sound Files|*.wav|All Files|*.*</sys:String>
+
+    <sys:String x:Key="Settings.ResetDefaults">Reset Defaults</sys:String>
+    <sys:String x:Key="Settings.ResetConfirm.Title">Reset</sys:String>
+    <sys:String x:Key="Settings.ResetConfirm.Message">Reset all settings to defaults?</sys:String>
+    <sys:String x:Key="Settings.Cancel">Cancel</sys:String>
+    <sys:String x:Key="Settings.Save">Save</sys:String>
+    <sys:String x:Key="Settings.Saved">Saved ✔</sys:String>
+
+    <!-- Tray -->
+    <sys:String x:Key="Tray.Title">NotifyLite — Custom Notifications</sys:String>
+    <sys:String x:Key="Tray.Active">Active - Listening</sys:String>
+    <sys:String x:Key="Tray.Disabled">Disabled</sys:String>
+    <sys:String x:Key="Tray.PermissionRequired">Permission Required</sys:String>
+    <sys:String x:Key="Tray.TooltipFormat">NotifyLite — {0}</sys:String>
+    <sys:String x:Key="Tray.Menu.Enabled">✅ Enabled</sys:String>
+    <sys:String x:Key="Tray.Menu.Disabled">⬜ Disabled</sys:String>
+    <sys:String x:Key="Tray.Menu.DarkTheme">🌙 Dark Theme</sys:String>
+    <sys:String x:Key="Tray.Menu.LightTheme">☀️ Light Theme</sys:String>
+    <sys:String x:Key="Tray.Menu.SoundOn">🔔 Sound: ON</sys:String>
+    <sys:String x:Key="Tray.Menu.SoundOff">🔕 Sound: OFF</sys:String>
+    <sys:String x:Key="Tray.Menu.AutoStartOn">🔄 Auto-start: ON</sys:String>
+    <sys:String x:Key="Tray.Menu.AutoStartOff">🔄 Auto-start: OFF</sys:String>
+    <sys:String x:Key="Tray.Menu.Settings">⚙️ Settings</sys:String>
+    <sys:String x:Key="Tray.Menu.Exit">❌ Exit</sys:String>
+
+    <!-- Permission -->
+    <sys:String x:Key="Permission.Title">NotifyLite - Permission Required</sys:String>
+    <sys:String x:Key="Permission.Message">NotifyLite needs permission to access your notifications.&#x0a;&#x0a;Please grant notification access in Windows Settings:&#x0a;Settings &gt; Privacy &gt; Notifications</sys:String>
+
+    <!-- Toast, History, Floating Icon -->
+    <sys:String x:Key="Toast.Title">NotifyLite Toast</sys:String>
+    <sys:String x:Key="Time.JustNow">just now</sys:String>
+    <sys:String x:Key="Time.SecondsAgo">{0}s ago</sys:String>
+    <sys:String x:Key="Time.MinutesAgo">{0}m ago</sys:String>
+    <sys:String x:Key="Time.HoursAgo">{0}h ago</sys:String>
+    <sys:String x:Key="History.Title">Notifications</sys:String>
+    <sys:String x:Key="History.ClearAll">Clear All</sys:String>
+    <sys:String x:Key="History.Empty">No notifications</sys:String>
+    <sys:String x:Key="History.UnknownApp">Unknown</sys:String>
+    <sys:String x:Key="FloatingIcon.Title">NotifyLite</sys:String>
+
+</ResourceDictionary>
