@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO;
 using System.Text.Json;
 using NotifyLite.Helpers;
 using NotifyLite.Services;
@@ -214,16 +215,145 @@ public class LocalizationBoundaryTests
         var loc = new LocalizationManager();
         loc.Initialize(preference: lang);
 
-        var localizedStatus = status switch
-        {
-            "Active - Listening" or "Active" => loc.GetString("Tray.Active"),
-            "Disabled" => loc.GetString("Tray.Disabled"),
-            "Permission Required" or "PermissionRequired" => loc.GetString("Tray.PermissionRequired"),
-            _ => loc.GetString(status)
-        };
-        var tooltip = loc.GetString("Tray.TooltipFormat", localizedStatus);
+        var tooltip = TrayManager.FormatTooltip(status, loc);
 
         Assert.Equal(expectedTooltip, tooltip);
+    }
+
+    [Theory]
+    [InlineData("en-US", "Tray.Menu.Enabled", "✅ Enabled")]
+    [InlineData("zh-CN", "Tray.Menu.Enabled", "✅ 已启用")]
+    [InlineData("en-US", "Tray.Menu.Disabled", "⬜ Disabled")]
+    [InlineData("zh-CN", "Tray.Menu.Disabled", "⬜ 已禁用")]
+    [InlineData("en-US", "Tray.Menu.DarkTheme", "🌙 Dark Theme")]
+    [InlineData("zh-CN", "Tray.Menu.DarkTheme", "🌙 深色模式")]
+    [InlineData("en-US", "Tray.Menu.LightTheme", "☀️ Light Theme")]
+    [InlineData("zh-CN", "Tray.Menu.LightTheme", "☀️ 浅色模式")]
+    [InlineData("en-US", "Tray.Menu.SoundOn", "🔔 Sound: ON")]
+    [InlineData("zh-CN", "Tray.Menu.SoundOn", "🔔 提示音: 开启")]
+    [InlineData("en-US", "Tray.Menu.SoundOff", "🔕 Sound: OFF")]
+    [InlineData("zh-CN", "Tray.Menu.SoundOff", "🔕 提示音: 关闭")]
+    [InlineData("en-US", "Tray.Menu.AutoStartOn", "🔄 Auto-start: ON")]
+    [InlineData("zh-CN", "Tray.Menu.AutoStartOn", "🔄 开机自启: 开启")]
+    [InlineData("en-US", "Tray.Menu.AutoStartOff", "🔄 Auto-start: OFF")]
+    [InlineData("zh-CN", "Tray.Menu.AutoStartOff", "🔄 开机自启: 关闭")]
+    [InlineData("en-US", "Tray.Menu.Settings", "⚙️ Settings")]
+    [InlineData("zh-CN", "Tray.Menu.Settings", "⚙️ 设置")]
+    [InlineData("en-US", "Tray.Menu.Exit", "❌ Exit")]
+    [InlineData("zh-CN", "Tray.Menu.Exit", "❌ 退出")]
+    public void TrayMenus_LocalizedCorrectly(string lang, string key, string expected)
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: lang);
+
+        Assert.Equal(expected, loc.GetString(key));
+    }
+
+    [Theory]
+    [InlineData("en-US", "Reset", "Reset all settings to defaults?", "Saved ✔", "Save", "Select Notification Sound", "Select App Sound", "Sound Files|*.wav|All Files|*.*")]
+    [InlineData("zh-CN", "恢复默认", "确定将所有设置恢复为默认值吗？", "已保存 ✔", "保存", "选择通知提示音", "选择应用提示音", "音频文件|*.wav|所有文件|*.*")]
+    public void SettingsPromptsAndDialogs_LocalizedCorrectly(
+        string lang,
+        string expectedResetTitle,
+        string expectedResetMsg,
+        string expectedSaved,
+        string expectedSave,
+        string expectedBrowseTitle,
+        string expectedAppBrowseTitle,
+        string expectedFilter)
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: lang);
+
+        Assert.Equal(expectedResetTitle, loc.GetString("Settings.ResetConfirm.Title"));
+        Assert.Equal(expectedResetMsg, loc.GetString("Settings.ResetConfirm.Message"));
+        Assert.Equal(expectedSaved, loc.GetString("Settings.Saved"));
+        Assert.Equal(expectedSave, loc.GetString("Settings.Save"));
+        Assert.Equal(expectedBrowseTitle, loc.GetString("Settings.Sound.BrowseDialogTitle"));
+        Assert.Equal(expectedAppBrowseTitle, loc.GetString("Settings.Sound.AppSoundDialogTitle"));
+        Assert.Equal(expectedFilter, loc.GetString("Settings.Sound.Filter"));
+    }
+
+    [Fact]
+    public void DynamicSwitching_ImmediatelyUpdatesTrayAndPrompts()
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: "en-US");
+
+        // Verify initial English
+        Assert.Equal("NotifyLite — Active - Listening", TrayManager.FormatTooltip("Active - Listening", loc));
+        Assert.Equal("Saved ✔", loc.GetString("Settings.Saved"));
+        Assert.Equal("Reset all settings to defaults?", loc.GetString("Settings.ResetConfirm.Message"));
+        Assert.Equal("Select Notification Sound", loc.GetString("Settings.Sound.BrowseDialogTitle"));
+        Assert.Equal("✅ Enabled", loc.GetString("Tray.Menu.Enabled"));
+
+        // Switch to Chinese
+        loc.SetPreference("zh-CN");
+
+        Assert.Equal("NotifyLite — 运行中 - 正在监听", TrayManager.FormatTooltip("Active - Listening", loc));
+        Assert.Equal("已保存 ✔", loc.GetString("Settings.Saved"));
+        Assert.Equal("确定将所有设置恢复为默认值吗？", loc.GetString("Settings.ResetConfirm.Message"));
+        Assert.Equal("选择通知提示音", loc.GetString("Settings.Sound.BrowseDialogTitle"));
+        Assert.Equal("✅ 已启用", loc.GetString("Tray.Menu.Enabled"));
+
+        // Switch back to English
+        loc.SetPreference("en-US");
+
+        Assert.Equal("NotifyLite — Active - Listening", TrayManager.FormatTooltip("Active - Listening", loc));
+        Assert.Equal("Saved ✔", loc.GetString("Settings.Saved"));
+    }
+
+    [Fact]
+    public void AllResourceDictionaries_HaveCompleteKeyParity()
+    {
+        var enPath = FindResourceFile("Strings.en-US.xaml");
+        var zhPath = FindResourceFile("Strings.zh-CN.xaml");
+
+        Assert.True(File.Exists(enPath), $"en-US resource file not found at {enPath}");
+        Assert.True(File.Exists(zhPath), $"zh-CN resource file not found at {zhPath}");
+
+        var enXml = new System.Xml.XmlDocument();
+        enXml.Load(enPath);
+        var zhXml = new System.Xml.XmlDocument();
+        zhXml.Load(zhPath);
+
+        var nsManager = new System.Xml.XmlNamespaceManager(enXml.NameTable);
+        nsManager.AddNamespace("x", "http://schemas.microsoft.com/winfx/2006/xaml");
+        nsManager.AddNamespace("sys", "clr-namespace:System;assembly=mscorlib");
+
+        var enKeys = ExtractKeys(enXml, nsManager);
+        var zhKeys = ExtractKeys(zhXml, nsManager);
+
+        Assert.NotEmpty(enKeys);
+        Assert.Equal(enKeys, zhKeys);
+    }
+
+    private static string FindResourceFile(string fileName)
+    {
+        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+        var candidates = new[]
+        {
+            Path.Combine(baseDir, "Resources", fileName),
+            Path.Combine(baseDir, "..", "..", "..", "..", "NotifyLite", "Resources", fileName),
+            Path.Combine(baseDir, "..", "..", "..", "NotifyLite", "Resources", fileName)
+        };
+
+        foreach (var candidate in candidates)
+        {
+            var fullPath = Path.GetFullPath(candidate);
+            if (File.Exists(fullPath)) return fullPath;
+        }
+
+        return Path.GetFullPath(candidates[1]);
+    }
+
+    private static List<string> ExtractKeys(System.Xml.XmlDocument doc, System.Xml.XmlNamespaceManager nsManager)
+    {
+        return doc.SelectNodes("//sys:String/@x:Key", nsManager)?
+            .Cast<System.Xml.XmlAttribute>()
+            .Select(a => a.Value)
+            .OrderBy(k => k)
+            .ToList() ?? new List<string>();
     }
 
     [Fact]

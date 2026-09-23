@@ -42,16 +42,28 @@ public class TrayManager : IDisposable
     /// <summary>Initialize the tray icon with context menu.</summary>
     public void Initialize()
     {
+        _currentStatus = _configManager.Config.Enabled ? "Active - Listening" : "Disabled";
         _contextMenu = CreateContextMenu();
 
         _trayIcon = new TaskbarIcon
         {
             Icon = CreateDefaultIcon(),
-            ToolTipText = LocalizationManager.Instance.GetString("Tray.Title"),
+            ToolTipText = FormatTooltip(_currentStatus),
             ContextMenu = _contextMenu
         };
 
         LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        _configManager.ConfigChanged += OnConfigChanged;
+    }
+
+    private void OnConfigChanged(object? sender, EventArgs e)
+    {
+        if (Application.Current?.Dispatcher is { } dispatcher && !dispatcher.CheckAccess())
+        {
+            dispatcher.BeginInvoke(RefreshMenuHeaders);
+            return;
+        }
+        RefreshMenuHeaders();
     }
 
     private void OnLanguageChanged(object? sender, string lang)
@@ -209,25 +221,35 @@ public class TrayManager : IDisposable
         return Icon.FromHandle(bitmap.GetHicon());
     }
 
+    /// <summary>
+    /// Format localized tray tooltip text from a status string.
+    /// </summary>
+    public static string FormatTooltip(string status, LocalizationManager? loc = null)
+    {
+        loc ??= LocalizationManager.Instance;
+        var localizedStatus = status switch
+        {
+            "Active - Listening" or "Active" => loc.GetString("Tray.Active"),
+            "Disabled" => loc.GetString("Tray.Disabled"),
+            "Permission Required" or "PermissionRequired" => loc.GetString("Tray.PermissionRequired"),
+            _ => loc.GetString(status)
+        };
+        return loc.GetString("Tray.TooltipFormat", localizedStatus);
+    }
+
     /// <summary>Update the tooltip to show current status.</summary>
     public void UpdateTooltip(string status)
     {
         _currentStatus = status;
         if (_trayIcon != null)
         {
-            var localizedStatus = status switch
-            {
-                "Active - Listening" or "Active" => LocalizationManager.Instance.GetString("Tray.Active"),
-                "Disabled" => LocalizationManager.Instance.GetString("Tray.Disabled"),
-                "Permission Required" or "PermissionRequired" => LocalizationManager.Instance.GetString("Tray.PermissionRequired"),
-                _ => LocalizationManager.Instance.GetString(status)
-            };
-            _trayIcon.ToolTipText = LocalizationManager.Instance.GetString("Tray.TooltipFormat", localizedStatus);
+            _trayIcon.ToolTipText = FormatTooltip(status);
         }
     }
 
     public void Dispose()
     {
+        _configManager.ConfigChanged -= OnConfigChanged;
         LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
         _trayIcon?.Dispose();
         GC.SuppressFinalize(this);
