@@ -90,6 +90,7 @@
                             Background="Transparent"
                             Cursor="Hand"
                             Margin="4,0,0,0"
+                            ToolTip="{DynamicResource Toast.Close}"
                             MouseLeftButtonDown="CloseBtn_Click"
                             MouseEnter="CloseBtn_MouseEnter"
                             MouseLeave="CloseBtn_MouseLeave">

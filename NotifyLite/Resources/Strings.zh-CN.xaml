@@ -93,6 +93,8 @@
 
     <!-- Toast, History, Floating Icon -->
     <sys:String x:Key="Toast.Title">NotifyLite Toast</sys:String>
+    <sys:String x:Key="Toast.Close">关闭</sys:String>
+    <sys:String x:Key="Toast.UnknownApp">未知应用</sys:String>
     <sys:String x:Key="Time.JustNow">刚刚</sys:String>
     <sys:String x:Key="Time.SecondsAgo">{0} 秒前</sys:String>
     <sys:String x:Key="Time.MinutesAgo">{0} 分钟前</sys:String>
@@ -101,6 +103,8 @@
     <sys:String x:Key="History.ClearAll">清空全部</sys:String>
     <sys:String x:Key="History.Empty">暂无通知</sys:String>
     <sys:String x:Key="History.UnknownApp">未知应用</sys:String>
+    <sys:String x:Key="History.Dismiss">移除</sys:String>
     <sys:String x:Key="FloatingIcon.Title">NotifyLite</sys:String>
+    <sys:String x:Key="FloatingIcon.Tooltip">NotifyLite — 点击查看通知历史</sys:String>
 
 </ResourceDictionary>

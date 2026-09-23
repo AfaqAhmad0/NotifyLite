@@ -18,7 +18,8 @@
         <Border x:Name="IconBorder"
                 Width="40" Height="40"
                 CornerRadius="20"
-                Cursor="Hand">
+                Cursor="Hand"
+                ToolTip="{DynamicResource FloatingIcon.Tooltip}">
             <Border.Background>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
                     <GradientStop Color="#6C63FF" Offset="0"/>

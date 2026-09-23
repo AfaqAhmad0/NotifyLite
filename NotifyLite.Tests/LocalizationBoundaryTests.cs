@@ -381,4 +381,129 @@ public class LocalizationBoundaryTests
         Assert.Equal("张三: 晚上一起吃饭吗？", notif.Title);
         Assert.Equal("我在老地方等你", notif.Body);
     }
+
+    [Theory]
+    [InlineData("en-US", "NotifyLite Toast", "Close", "Unknown")]
+    [InlineData("zh-CN", "NotifyLite Toast", "关闭", "未知应用")]
+    public void ToastDisplaySurfaces_StringKeys_LocalizedCorrectly(string lang, string expectedTitle, string expectedClose, string expectedUnknownApp)
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: lang);
+
+        Assert.Equal(expectedTitle, loc.GetString("Toast.Title"));
+        Assert.Equal(expectedClose, loc.GetString("Toast.Close"));
+        Assert.Equal(expectedUnknownApp, loc.GetString("Toast.UnknownApp"));
+    }
+
+    [Theory]
+    [InlineData("en-US", "Notifications", "Clear All", "No notifications", "Unknown", "Dismiss")]
+    [InlineData("zh-CN", "通知历史", "清空全部", "暂无通知", "未知应用", "移除")]
+    public void HistoryDisplaySurfaces_StringKeys_LocalizedCorrectly(
+        string lang,
+        string expectedTitle,
+        string expectedClearAll,
+        string expectedEmpty,
+        string expectedUnknownApp,
+        string expectedDismiss)
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: lang);
+
+        Assert.Equal(expectedTitle, loc.GetString("History.Title"));
+        Assert.Equal(expectedClearAll, loc.GetString("History.ClearAll"));
+        Assert.Equal(expectedEmpty, loc.GetString("History.Empty"));
+        Assert.Equal(expectedUnknownApp, loc.GetString("History.UnknownApp"));
+        Assert.Equal(expectedDismiss, loc.GetString("History.Dismiss"));
+    }
+
+    [Theory]
+    [InlineData("en-US", "NotifyLite", "NotifyLite — Click to view history")]
+    [InlineData("zh-CN", "NotifyLite", "NotifyLite — 点击查看通知历史")]
+    public void FloatingIconDisplaySurfaces_StringKeys_LocalizedCorrectly(string lang, string expectedTitle, string expectedTooltip)
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: lang);
+
+        Assert.Equal(expectedTitle, loc.GetString("FloatingIcon.Title"));
+        Assert.Equal(expectedTooltip, loc.GetString("FloatingIcon.Tooltip"));
+    }
+
+    [Fact]
+    public void DisplaySurfaces_DynamicSwitching_SwitchesAllSurfaceKeys()
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: "en-US");
+
+        // Verify initial English
+        Assert.Equal("Notifications", loc.GetString("History.Title"));
+        Assert.Equal("Clear All", loc.GetString("History.ClearAll"));
+        Assert.Equal("No notifications", loc.GetString("History.Empty"));
+        Assert.Equal("Close", loc.GetString("Toast.Close"));
+        Assert.Equal("NotifyLite — Click to view history", loc.GetString("FloatingIcon.Tooltip"));
+
+        // Switch to Chinese
+        loc.SetPreference("zh-CN");
+        Assert.Equal("通知历史", loc.GetString("History.Title"));
+        Assert.Equal("清空全部", loc.GetString("History.ClearAll"));
+        Assert.Equal("暂无通知", loc.GetString("History.Empty"));
+        Assert.Equal("关闭", loc.GetString("Toast.Close"));
+        Assert.Equal("NotifyLite — 点击查看通知历史", loc.GetString("FloatingIcon.Tooltip"));
+
+        // Switch back to English
+        loc.SetPreference("en-US");
+        Assert.Equal("Notifications", loc.GetString("History.Title"));
+        Assert.Equal("Clear All", loc.GetString("History.ClearAll"));
+        Assert.Equal("No notifications", loc.GetString("History.Empty"));
+        Assert.Equal("Close", loc.GetString("Toast.Close"));
+        Assert.Equal("NotifyLite — Click to view history", loc.GetString("FloatingIcon.Tooltip"));
+    }
+
+    [Theory]
+    [InlineData("en-US", "Unknown")]
+    [InlineData("zh-CN", "未知应用")]
+    public void DisplaySurfaces_EmptyOrNullAppName_FallsBackToLocalizedUnknownApp(string lang, string expectedUnknown)
+    {
+        var loc = new LocalizationManager();
+        loc.Initialize(preference: lang);
+
+        var resolvedEmpty = NotifyLite.Windows.ToastWindow.ResolveDisplayAppName("", loc);
+        var resolvedNull = NotifyLite.Windows.ToastWindow.ResolveDisplayAppName(null, loc);
+        var resolvedCustom = NotifyLite.Windows.ToastWindow.ResolveDisplayAppName("Slack", loc);
+
+        Assert.Equal(expectedUnknown, resolvedEmpty);
+        Assert.Equal(expectedUnknown, resolvedNull);
+        Assert.Equal("Slack", resolvedCustom);
+    }
+
+    [Fact]
+    public void DisplaySurfaces_RebootSimulation_LoadsPersistedLanguageAndInitializesSurfaces()
+    {
+        // 1. Prepare simulated persisted config with zh-CN
+        var tempConfigFile = Path.Combine(Path.GetTempPath(), $"notifylite_test_{Guid.NewGuid():N}.json");
+        try
+        {
+            var initialConfig = new AppConfig { Language = "zh-CN" };
+            File.WriteAllText(tempConfigFile, JsonSerializer.Serialize(initialConfig));
+
+            // 2. Simulate application startup / reboot: load config and initialize localization
+            var loadedConfig = JsonSerializer.Deserialize<AppConfig>(File.ReadAllText(tempConfigFile));
+            Assert.NotNull(loadedConfig);
+            Assert.Equal("zh-CN", loadedConfig.Language);
+
+            var loc = new LocalizationManager();
+            loc.Initialize(loadedConfig.Language);
+
+            // 3. Verify effective language and display surface strings on reboot
+            Assert.Equal("zh-CN", loc.CurrentLanguage);
+            Assert.Equal("通知历史", loc.GetString("History.Title"));
+            Assert.Equal("清空全部", loc.GetString("History.ClearAll"));
+            Assert.Equal("暂无通知", loc.GetString("History.Empty"));
+            Assert.Equal("关闭", loc.GetString("Toast.Close"));
+            Assert.Equal("NotifyLite — 点击查看通知历史", loc.GetString("FloatingIcon.Tooltip"));
+        }
+        finally
+        {
+            if (File.Exists(tempConfigFile)) File.Delete(tempConfigFile);
+        }
+    }
 }

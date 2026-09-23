@@ -93,6 +93,8 @@
 
     <!-- Toast, History, Floating Icon -->
     <sys:String x:Key="Toast.Title">NotifyLite Toast</sys:String>
+    <sys:String x:Key="Toast.Close">Close</sys:String>
+    <sys:String x:Key="Toast.UnknownApp">Unknown</sys:String>
     <sys:String x:Key="Time.JustNow">just now</sys:String>
     <sys:String x:Key="Time.SecondsAgo">{0}s ago</sys:String>
     <sys:String x:Key="Time.MinutesAgo">{0}m ago</sys:String>
@@ -101,6 +103,8 @@
     <sys:String x:Key="History.ClearAll">Clear All</sys:String>
     <sys:String x:Key="History.Empty">No notifications</sys:String>
     <sys:String x:Key="History.UnknownApp">Unknown</sys:String>
+    <sys:String x:Key="History.Dismiss">Dismiss</sys:String>
     <sys:String x:Key="FloatingIcon.Title">NotifyLite</sys:String>
+    <sys:String x:Key="FloatingIcon.Tooltip">NotifyLite — Click to view history</sys:String>
 
 </ResourceDictionary>

@@ -40,12 +40,15 @@ public partial class ToastWindow : Window
         NotificationData = data;
 
         // Content
-        AppNameText.Text = data.AppName;
+        AppNameText.Text = ResolveDisplayAppName(data.AppName);
         TitleText.Text = data.Title;
         BodyText.Text = data.Body;
         TimestampText.Text = FormatTimestamp(data.Timestamp);
         if (string.IsNullOrWhiteSpace(data.Body)) BodyText.Visibility = Visibility.Collapsed;
         if (string.IsNullOrWhiteSpace(data.Title)) TitleText.Visibility = Visibility.Collapsed;
+
+        Services.LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        Closed += (_, _) => Services.LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
 
         ApplyConfig(config);
 
@@ -53,6 +56,26 @@ public partial class ToastWindow : Window
         _timerBarUpdater.Tick += UpdateTimerBar;
         _dismissTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(_dismissSeconds) };
         _dismissTimer.Tick += (_, _) => { _dismissTimer.Stop(); _timerBarUpdater.Stop(); DismissWithAnimation(); };
+    }
+
+    public static string ResolveDisplayAppName(string? appName, Services.LocalizationManager? loc = null)
+    {
+        var manager = loc ?? Services.LocalizationManager.Instance;
+        return string.IsNullOrWhiteSpace(appName)
+            ? manager.GetString("Toast.UnknownApp")
+            : appName;
+    }
+
+    private void OnLanguageChanged(object? sender, string lang)
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (NotificationData != null)
+            {
+                TimestampText.Text = FormatTimestamp(NotificationData.Timestamp);
+                AppNameText.Text = ResolveDisplayAppName(NotificationData.AppName);
+            }
+        });
     }
 
     private void ApplyConfig(Helpers.AppConfig config)

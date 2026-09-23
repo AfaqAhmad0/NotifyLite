@@ -183,6 +183,7 @@ public partial class HistoryWidget : Window
             Margin = new Thickness(4, 0, 0, 0),
             Tag = notif
         };
+        closeBtn.SetResourceReference(FrameworkElement.ToolTipProperty, "History.Dismiss");
         closeBtn.Child = new TextBlock
         {
             Text = "\u2715",
