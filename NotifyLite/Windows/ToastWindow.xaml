@@ -1,7 +1,7 @@
 <Window x:Class="NotifyLite.Windows.ToastWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="NotifyLite Toast"
+        Title="{DynamicResource Toast.Title}"
         Width="300"
         SizeToContent="Height"
         WindowStyle="None"
@@ -90,6 +90,7 @@
                             Background="Transparent"
                             Cursor="Hand"
                             Margin="4,0,0,0"
+                            ToolTip="{DynamicResource Toast.Close}"
                             MouseLeftButtonDown="CloseBtn_Click"
                             MouseEnter="CloseBtn_MouseEnter"
                             MouseLeave="CloseBtn_MouseLeave">

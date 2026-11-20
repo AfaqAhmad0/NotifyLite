@@ -1,4 +1,4 @@
-﻿using NotifyLite.Helpers;
+using NotifyLite.Helpers;
 using NotifyLite.Managers;
 using NotifyLite.Services;
 using NotifyLite.Windows;
@@ -45,6 +45,7 @@ public partial class App : Application
         // 1. Load configuration
         _configManager = new ConfigManager();
         _configManager.Load();
+        LocalizationManager.Instance.Initialize(_configManager.Config.Language);
         _configManager.ConfigChanged += OnConfigChanged;
 
         // 2. Initialize toast manager (handles custom UI rendering)
@@ -97,6 +98,7 @@ public partial class App : Application
         Dispatcher.BeginInvoke(() =>
         {
             var config = _configManager.Config;
+            LocalizationManager.Instance.SetPreference(config.Language);
 
             if (config.ShowFloatingIcon)
             {
@@ -141,7 +143,6 @@ public partial class App : Application
         const int maxRetries = 5;
         const int delaySeconds = 5;
         bool accessGranted = false;
-
         for (int attempt = 1; attempt <= maxRetries; attempt++)
         {
             accessGranted = await _listener.StartAsync();
@@ -164,10 +165,8 @@ public partial class App : Application
             Debug.WriteLine("[App] Notification access was not granted after retries.");
 
             MessageBox.Show(
-                "NotifyLite needs permission to access your notifications.\n\n" +
-                "Please grant notification access in Windows Settings:\n" +
-                "Settings > Privacy > Notifications",
-                "NotifyLite - Permission Required",
+                LocalizationManager.Instance.GetString("Permission.Message"),
+                LocalizationManager.Instance.GetString("Permission.Title"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
         }

@@ -1,4 +1,5 @@
 using NotifyLite.Helpers;
+using NotifyLite.Services;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -21,8 +22,18 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
         _configManager = configManager;
+        LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        Closed += (_, _) => LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
         LoadSettings();
         _isLoading = false;
+    }
+
+    private void OnLanguageChanged(object? sender, string lang)
+    {
+        var workArea = SystemParameters.WorkArea;
+        if (PositionTipText != null)
+            PositionTipText.Text = LocalizationManager.Instance.GetString("Settings.Behavior.PosTip", (int)workArea.Right, (int)workArea.Bottom);
+        BuildAppSoundsList();
     }
 
     private void Header_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -40,8 +51,11 @@ public partial class SettingsWindow : Window
     {
         var c = _configManager.Config;
 
+        // Language
+        SelectComboByTag(LanguageCombo, c.Language);
+
         // Appearance
-        ThemeCombo.SelectedIndex = c.Theme == "Dark" ? 0 : 1;
+        SelectComboByTag(ThemeCombo, c.Theme);
         SelectComboByContent(FontCombo, c.FontFamily);
         TitleSizeSlider.Value = c.TitleFontSize;
         BodySizeSlider.Value = c.BodyFontSize;
@@ -70,7 +84,7 @@ public partial class SettingsWindow : Window
         PosYBox.Text = c.PositionY >= 0 ? c.PositionY.ToString() : "";
         CustomPositionPanel.Visibility = c.Position == "Custom" ? Visibility.Visible : Visibility.Collapsed;
         var workArea = SystemParameters.WorkArea;
-        PositionTipText.Text = $"Min: 0. Max X: {(int)workArea.Right}, Max Y: {(int)workArea.Bottom}";
+        PositionTipText.Text = LocalizationManager.Instance.GetString("Settings.Behavior.PosTip", (int)workArea.Right, (int)workArea.Bottom);
 
         // Floating Icon
         FloatingIconCheck.IsChecked = c.ShowFloatingIcon;
@@ -104,7 +118,7 @@ public partial class SettingsWindow : Window
         {
             AppSoundsPanel.Children.Add(new TextBlock
             {
-                Text = "No apps detected yet. Apps will appear here once notifications arrive.",
+                Text = LocalizationManager.Instance.GetString("Settings.Sound.NoApps"),
                 Foreground = new SolidColorBrush(Color.FromRgb(102, 102, 136)),
                 FontSize = 11,
                 TextWrapping = TextWrapping.Wrap,
@@ -140,9 +154,9 @@ public partial class SettingsWindow : Window
                 VerticalAlignment = VerticalAlignment.Center,
                 Tag = appName
             };
-            combo.Items.Add(new WpfComboBoxItem { Content = "Default", Tag = "default" });
-            combo.Items.Add(new WpfComboBoxItem { Content = "Custom", Tag = "custom" });
-            combo.Items.Add(new WpfComboBoxItem { Content = "Muted", Tag = "none" });
+            combo.Items.Add(new WpfComboBoxItem { Content = LocalizationManager.Instance.GetString("Settings.Sound.ModeDefault"), Tag = "default" });
+            combo.Items.Add(new WpfComboBoxItem { Content = LocalizationManager.Instance.GetString("Settings.Sound.ModeCustom"), Tag = "custom" });
+            combo.Items.Add(new WpfComboBoxItem { Content = LocalizationManager.Instance.GetString("Settings.Sound.ModeMuted"), Tag = "none" });
             DockPanel.SetDock(combo, Dock.Left);
             row.Children.Add(combo);
 
@@ -211,8 +225,11 @@ public partial class SettingsWindow : Window
     {
         var c = _configManager.Config;
 
+        // Language
+        c.Language = (LanguageCombo.SelectedItem as WpfComboBoxItem)?.Tag?.ToString() ?? "System";
+
         // Appearance
-        c.Theme = (ThemeCombo.SelectedItem as WpfComboBoxItem)?.Content?.ToString() ?? "Dark";
+        c.Theme = (ThemeCombo.SelectedItem as WpfComboBoxItem)?.Tag?.ToString() ?? "Dark";
         c.FontFamily = (FontCombo.SelectedItem as WpfComboBoxItem)?.Content?.ToString() ?? "Segoe UI";
         c.TitleFontSize = TitleSizeSlider.Value;
         c.BodyFontSize = BodySizeSlider.Value;
@@ -262,14 +279,14 @@ public partial class SettingsWindow : Window
         UpdateThemeColors(c);
 
         _configManager.Save();
+        LocalizationManager.Instance.SetPreference(c.Language);
 
         // Show temporary feedback on the button
         if (sender is Button btn)
         {
-            var origContent = btn.Content;
-            btn.Content = "Saved ✔";
+            btn.Content = LocalizationManager.Instance.GetString("Settings.Saved");
             await System.Threading.Tasks.Task.Delay(2000);
-            btn.Content = origContent;
+            btn.SetResourceReference(ContentProperty, "Settings.Save");
         }
     }
 
@@ -300,10 +317,13 @@ public partial class SettingsWindow : Window
 
     private void Reset_Click(object sender, RoutedEventArgs e)
     {
-        if (MessageBox.Show("Reset all settings to defaults?", "Reset",
+        var msg = LocalizationManager.Instance.GetString("Settings.ResetConfirm.Message");
+        var title = LocalizationManager.Instance.GetString("Settings.ResetConfirm.Title");
+        if (MessageBox.Show(msg, title,
             MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
         {
             var c = _configManager.Config;
+            c.Language = "System";
             c.Theme = "Dark"; c.FontFamily = "Segoe UI";
             c.TitleFontSize = 12; c.BodyFontSize = 11;
             c.TitleColor = "#E0E0F0"; c.BodyColor = "#AAAACC";
@@ -320,6 +340,7 @@ public partial class SettingsWindow : Window
             _isLoading = true;
             LoadSettings();
             _isLoading = false;
+            LocalizationManager.Instance.SetPreference(c.Language);
         }
     }
 
@@ -327,7 +348,7 @@ public partial class SettingsWindow : Window
     private void ThemeCombo_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (_isLoading) return;
-        var isDark = ThemeCombo.SelectedIndex == 0;
+        var isDark = (ThemeCombo.SelectedItem as WpfComboBoxItem)?.Tag?.ToString() == "Dark" || ThemeCombo.SelectedIndex == 0;
         TitleColorBox.Text = isDark ? "#E0E0F0" : "#1E1E28";
         BodyColorBox.Text = isDark ? "#AAAACC" : "#505064";
         CardColorBox.Text = isDark ? "#1E1E2E" : "#FFFFFF";
@@ -400,8 +421,8 @@ public partial class SettingsWindow : Window
     {
         var dialog = new Microsoft.Win32.OpenFileDialog
         {
-            Filter = "Sound Files|*.wav|All Files|*.*",
-            Title = "Select Notification Sound"
+            Filter = LocalizationManager.Instance.GetString("Settings.Sound.Filter"),
+            Title = LocalizationManager.Instance.GetString("Settings.Sound.BrowseDialogTitle")
         };
         if (dialog.ShowDialog() == true) SoundFileBox.Text = dialog.FileName;
     }
@@ -412,8 +433,8 @@ public partial class SettingsWindow : Window
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
             {
-                Filter = "Sound Files|*.wav|All Files|*.*",
-                Title = "Select App Sound"
+                Filter = LocalizationManager.Instance.GetString("Settings.Sound.Filter"),
+                Title = LocalizationManager.Instance.GetString("Settings.Sound.AppSoundDialogTitle")
             };
             if (dialog.ShowDialog() == true) pathBox.Text = dialog.FileName;
         }

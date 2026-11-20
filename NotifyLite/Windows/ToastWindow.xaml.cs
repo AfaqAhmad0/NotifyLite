@@ -40,19 +40,42 @@ public partial class ToastWindow : Window
         NotificationData = data;
 
         // Content
-        AppNameText.Text = data.AppName;
+        AppNameText.Text = ResolveDisplayAppName(data.AppName);
         TitleText.Text = data.Title;
         BodyText.Text = data.Body;
         TimestampText.Text = FormatTimestamp(data.Timestamp);
         if (string.IsNullOrWhiteSpace(data.Body)) BodyText.Visibility = Visibility.Collapsed;
         if (string.IsNullOrWhiteSpace(data.Title)) TitleText.Visibility = Visibility.Collapsed;
 
+        Services.LocalizationManager.Instance.LanguageChanged += OnLanguageChanged;
+        Closed += (_, _) => Services.LocalizationManager.Instance.LanguageChanged -= OnLanguageChanged;
+
         ApplyConfig(config);
 
-        _dismissTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(_dismissSeconds) };
-        _dismissTimer.Tick += (_, _) => { _dismissTimer.Stop(); _timerBarUpdater.Stop(); DismissWithAnimation(); };
         _timerBarUpdater = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
         _timerBarUpdater.Tick += UpdateTimerBar;
+        _dismissTimer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(_dismissSeconds) };
+        _dismissTimer.Tick += (_, _) => { _dismissTimer.Stop(); _timerBarUpdater.Stop(); DismissWithAnimation(); };
+    }
+
+    public static string ResolveDisplayAppName(string? appName, Services.LocalizationManager? loc = null)
+    {
+        var manager = loc ?? Services.LocalizationManager.Instance;
+        return string.IsNullOrWhiteSpace(appName)
+            ? manager.GetString("Toast.UnknownApp")
+            : appName;
+    }
+
+    private void OnLanguageChanged(object? sender, string lang)
+    {
+        Dispatcher.BeginInvoke(() =>
+        {
+            if (NotificationData != null)
+            {
+                TimestampText.Text = FormatTimestamp(NotificationData.Timestamp);
+                AppNameText.Text = ResolveDisplayAppName(NotificationData.AppName);
+            }
+        });
     }
 
     private void ApplyConfig(Helpers.AppConfig config)
@@ -139,11 +162,7 @@ public partial class ToastWindow : Window
 
     private static string FormatTimestamp(DateTime timestamp)
     {
-        var diff = DateTime.Now - timestamp;
-        if (diff.TotalSeconds < 5) return "just now";
-        if (diff.TotalSeconds < 60) return $"{(int)diff.TotalSeconds}s ago";
-        if (diff.TotalMinutes < 60) return $"{(int)diff.TotalMinutes}m ago";
-        return timestamp.ToString("HH:mm");
+        return Services.LocalizationManager.Instance.FormatRelativeTime(timestamp, isHistory: false);
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
